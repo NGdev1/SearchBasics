@@ -25,7 +25,7 @@ for filename in data:
 
     i += 1
 
-f = open('lemmatized/inverted_index.json', "a+", encoding='utf-8')
+f = open('lemmatized/inverted_index.json', "w", encoding='utf-8')
 json.dump(inverted_index, f)
 f.close()
 

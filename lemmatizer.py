@@ -13,8 +13,8 @@ for filename in data:
     text = f.read()
     f.close()
 
-    f = open('lemmatized/' + filename, "a+")
-    text = functions.append_lemming(text)
+    f = open('lemmatized/' + filename, "w+")
+    text = functions.append_lemming(text.lower())
     f.write(text)
     f.close()
 
