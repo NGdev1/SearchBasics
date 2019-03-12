@@ -1,0 +1,35 @@
+ Машина состояний Игровая логика и ИИ Статьи Программирование игр Новости Статьи Код Арт Дизайн Индустрия Подсказки Термины FAQ Страницы
+ Сообщества Форум Качалка Участники Пользователи Тёмная тема Публикации Проекты Форум Работа Войти ПрограммированиеСтатьиИгровая логика и ИИ Машина состояний Автор Владимир
+ Толмачев Представлю на суд общественности свою реализацию машины состояний также известную как конечный автомат Машина состояний привлекательна тем что обрабатывает
+ логику поведения объекта в заранее настроенном алгоритме что крайне необходимо для сложных объектов В статье приведу логику объекта использующегося в
+ моей игре Tropic Defense Теория Настройка сложного объекта Теория Машина состояний это сущность состоящая из конечного набора состояний объекта с
+ правилами перехода между этими состояний Можно выделить три части конечного автомата Состояние объекта Событие Менеджер состояний Состояние объекта State Если
+ просто то это то что в текущий момент происходит с объектом Ящик может лежать катиться падать Это все состояния Внесу
+ новый термин State для описания программной реализации состояния State должен знать как реагировать на разные события это его первоочередная задача
+ Событие Event Для того же ящика события могут быть толкнуть столкнуться с землей скатиться с опоры События Event нужны для
+ оповещения машины состояний что с объектом что то произошло Если ящик лежит и его толкнули то он покатиться Это переход
+ из состояния лежать в катиться по событию толчок Менеджер состояний Machine На нем лежит вся логика обработки событий перехода состояний
+ оповещение о изменении состояния объекта Простая реализация может выглядеть следующим образом Показать Скрыть include iostream include map include vector using
+ namespace std const int EventName_InOne 1 const int EventName_InTwo 2 struct State int name std map int int transitions struct
+ Event int name class Machine public Machine void dispatch_event int name private void setstate int name State getstate int name
+ private std vector State states std vector Event events State current_state Machine Machine Event inone Event EventName_InOne Event intwo Event
+ EventName_InTwo State one State 0 State two State 1 one transitions intwo name two name two transitions inone name one
+ name states push_back one states push_back two setstate one name void Machine dispatch_event int name cout endl dispatch event name
+ auto iterator current_state transitions find name if iterator current_state transitions end int to iterator second setstate to void Machine setstate
+ int name current_state getstate name current_state getstate name cout endl now state current_state name State Machine getstate int name for
+ auto state states if state name name return state return nullptr int main Machine machine machine dispatch_event EventName_InOne machine dispatch_event
+ EventName_InTwo machine dispatch_event EventName_InOne return 0 Вывод Показать Скрыть now state 0 dispatch event 1 dispatch event 2 now state
+ 1 dispatch event 1 now state 0 Первое событие будет обработано но реакции на него не последует Последующие два события
+ успешно отработают поменяв состояния у объекта Код приведен простой с минимальным количеством проверок сугубо в показательных целях Это очень простой
+ пример имеется два состояния и два перехода между ними Настройка сложного объекта Следующий пример будет гораздо сложнее но таким же
+ легким в управлении Приведу схему логики пушки для игры жанра Tower Defense Всего 6 состояний 1 Сон Пушка ждет врага
+ в этот момент с ней ничего не происходит 2 Подготовка к бою К примеру поднятие орудий 3 Подготовка ко сну
+ Обратное состояние к подготовка к бою опускаются орудия 4 Режим огня Расстреливает патроны по врагу 5 Перезарядка заряжаются орудия 6
+ Ожидание следующей цели включается когда враг убит 6 событий 1 Обнаружена цель 2 Орудия готовы 3 Перезарядить орудия 4 Цели
+ нет 5 Отдыхать 6 Спать 8 переходов 1 Сон подготовка 2 Подготовка стрельба 3 Стрельба перезарядка 4 Перезарядка стрельба 5
+ Стрельба ожидание цели 6 Ожидание цели стрельба 7 Ожидание подготовка к отдыху 8 Отдых Настроив логику пушку согласно схеме управление
+ для нее сводиться к двум командам capture target и release target Все остальное пушка сделает уже сама Видео с пушкой
+ и врагов Показать Скрыть Исходный код State Mashine Example Машины состояний FiniteStateMachine h FiniteStateMachine cpp Пример использования для вышеописанной пушки
+ MachineShoot h MachineShoot cpp Код можно посмотреть скачать использовать по своему усмотрению Проект Tropic Defense http www gamedev ru projects
+ forum id 186106 конечный автомат логика машина состояний 14 сентября 2014 Обновление 11 окт 2014 Комментарии 39 Убрать рекламу Контакт
+ Сообщества Участники Каталог сайтов Категории Архив новостей GameDev ru Разработка игр 2001 2019

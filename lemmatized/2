@@ -1,0 +1,539 @@
+   AngelScript   общий   статья   программирование   игра   новость   статья   код   арт  
+ дизайн   индустрия   подсказка   термин   FAQ   страница   сообщество   форум   качалка   участник 
+
+   пользователь   темный   тема   публикация   проект   форум   работа   входить   программированиестатьиобщий   AngelScript
+   автор   константин   гиляровский   в   данный   статья   я   хотеться   бы   показывать
+ 
+   почему   я   понравиться   скриптовый   язык   AngelScript   когда   я   выбирать  
+ язык   для   свой   движок   я   просматривать   множество   кандидатура   и   для  
+ подробный 
+   рассмотрение   выбирать   два   скриптовый   язык   они   быть   LUA   и
+   Python   введение   превивать   особенность   проблема   регистрация   перегружать   функция   регистрация   перегружать
+   метод 
+   получение   адрес   на   переменный   объявлять   в   класс   полезный  
+ ссылка   введение   в   процесс   рассмотрение   LUA   и   Python   я   выделять  
+ для   себя 
+   что   LUA   являться   достаточно   быстрый   но   с   немного
+   непривычный   синтаксис   Python   же   обладать   очень   простой   синтаксис   и   масса
+   полезный   библиотека 
+   но   к   сожаление   он   оказываться   довольно   медленный  
+ и   он   довольно   тяжело   привязывать   к   с   и   тут   на  
+ работа   я   подсказывать 
+   использовать   AngelScript   мол   он   удобный   для   связка
+   быстро   LUA   и   иметь   с   подобный   синтаксис   как   только   я
+   начинать   он   изучать 
+   я   понимать   что   это   тот   самый  
+ скриптовый   язык   мой   мечта   превивать   вот   что   можно   прочитывать   про  
+ этот   язык   на   википедия 
+   AngelScript   представлять   себя   движок   в   который
+   приложение   мочь   регистрировать   функция   свойство   и   тип   который   мочь   использоваться
+   в   скрипт   скрипт   компилироваться 
+   в   модуль   количество   использовать   модуль  
+ варьрироваться   в   зависимость   от   нужда   приложение   мочь   также   использовать   различный  
+ интерфейс   для   каждый   модуль   с 
+   помощь   группа   конфигурация   это   особенно
+   полезный   когда   приложение   работать   с   несколько   тип   скрипт   например   GUI
+   AI   и   т   д   программа 
+   Hello   world   в   простой  
+ случай   выглядеть   так   void   main   print   Hello   world   n   да  
+ синтаксис   язык   радовать   с   самый   начало 
+   язык   поддерживать   как   метод
+   функциональный   программирование   так   и   ооп   с   самый   начало   он   подкупать
+   свой   простота   регистрация   функция   переменный   тип 
+   например   регистрация   глобальный  
+ переменная   g _ Engine   RegisterGlobalProperty   int   SomeVal   SomeVal   где   SomeVal   это  
+ переменный   тип   int   регистрация   глобальный   функция   g _ Engine   RegisterGlobalFunction 
+   void
+   Print   string   val   asFUNCTION   Print   asCALL _ CDECL   void   Print   string
+   val   cout   val   data   да   для   AngelScript   не   нужно   писать
+ 
+   функция   биндинг   что   являться   огроменный   плюс   в   сравнение   с  
+ другой   язык   для   регистрация   свой   тип   приходиться   написать   парочка   функция  
+ фабрика 
+   для   создание   экземпляр   и   счетчик   ссылка   для   тип   тип
+   ссылка   и   вызов   конструктор   и   деструктор   для   объект   тип   тип
+   значение 
+   например   у   мы   быть   класс   float3   который   мы  
+ хотеть   бы   зарегистрировать   класс   счетчик   ссылка   class   RefC   private   int  
+ refC   public 
+   RefC   refC   1   void   AddRef   refC   void   Release
+   if   refC   delete   this   класс   который   мы   хотеть   зарегистрировать   class
+   float3   public 
+   RefC   public   float   x   float   y   float  
+ z   float3   x   y   z   0   void   Normalize   float   Len  
+ sqrt   x   x 
+   y   y   z   z   Len   Len   Len
+   1   x   Len   y   Len   z   Len   фабрика   float3   Float3FactoryE
+   return   new   float3 
+   функция   вывод   на   экран   void   PrintF3  
+ float3   val   cout   x   val   x   y   val   y   z  
+ val   z   для   это 
+   мы   регистрировать   объект   как   тип   ссылка
+   и   указывать   он   фабрика   счетчик   ссылка   метод   и   функция   вывод
+   данные   на   экран   и 
+   вот   как   это   выглядеть   g _
+ Engine   RegisterObjectType   float3   0   asOBJ _ REF   g _ Engine   RegisterObjectMethod   float3  
+ void   Normalize   asMETHOD   float3   Normalize   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour 
+
+   float3   asBEHAVE _ FACTORY   float3   new _ float3   asFUNCTION   Float3FactoryE   asCALL _ CDECL
+   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ ADDREF   void   AddRef   asMETHOD   float3
+   AddRef   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3 
+   asBEHAVE _ RELEASE  
+ void   Release   asMETHOD   float3   Release   asCALL _ THISCALL   g _ Engine   RegisterGlobalFunction  
+ void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   мы   на  
+ это   конечно 
+   же   не   останавливаться   так   как   мы   нужный   доступ
+   к   значение   xyz   поэтому   они   мы   тоже   должный   зарегистрировать   что
+   мы   и 
+   делать   написать   g _ Engine   RegisterObjectProperty   float3   float  
+ x   offsetof   float3   x   g _ Engine   RegisterObjectProperty   float3   float   y  
+ offsetof   float3   y   g _ Engine   RegisterObjectProperty 
+   float3   float   z   offsetof
+   float3   z   все   предельно   простой   и   понятно   теперь   в   скрипт
+   можно   написать   float3   ObjPos   ObjPos   x 
+   1   ObjPos   y  
+ 2   ObjPos   z   3   ObjPos   Normalize   Print   ObjPos   выполнять   этот  
+ скрипт   мы   увидеть   на   экран   значение   нормализовать 
+   вектор   особенность   я
+   очень   порадовать   возможность   перегрузка   оператор   в   AngelScript   в   с   для
+   это   существовать   ключевой   слово   operator   и   символ 
+   оператор   AngelScript  
+ для   это   использовать   определенный   функция   вот   полный   список   соответствие   opNeg  
+ opCom   opPreInc   opPreDec   opPostInc   opPostDec   opEquals   opEquals   opCmp 
+   opCmp   opCmp
+   opCmp   opAssign   opAddAssign   opSubAssign   opMulAssign   opDivAssign   opAndAssign   opOrAssign   opXorAssign   opModAssign
+   opShlAssign   opShrAssign   opUShrAssign   opAdd   opAdd _ r   opSub   opSub _ r   opMul
+ 
+   opMul _ r   opDiv   opDiv _ r   opMod   opMod _ r   opAnd  
+ opAnd _ r   opOr   opOr _ r   opXor   opXor _ r   opShl   opShl _
+ r   opShr   opShr _ r   opUShr   opUShr _ r   opIndex   допускать   мы 
+
+   хотеть   сделать   возможность   чтобы   наш   вектор   поддерживать   прибавление   к   себя
+   другой   вектор   для   это   слегка   модифицировать   наш   класс   class   float3
+ 
+   public   RefC   public   float   x   float   y   float   z  
+ float3   x   y   z   0   void   Normalize   float   Len   sqrt  
+ x 
+   x   y   y   z   z   Len   Len   Len   1
+   x   Len   y   Len   z   Len   float3   operator   float3  _ rval
+   x 
+  _ rval   x   y  _ rval   y   z  _ rval   z  
+ this   AddRef   return   this   оставаться   только   зарегистрировать   новый   метод   g _
+ Engine   RegisterObjectMethod   float3 
+   float3   opAddAssign   float3  _ rval   asMETHOD   float3   operator
+   asCALL _ THISCALL   и   теперь   можно   спокойно   писать   так   float3   ObjPos
+   ObjPos   x   1   ObjPos 
+   y   2   ObjPos   z   3  
+ float3   ObjOffset   ObjOffset   x   3   ObjOffset   y   1   ObjOffset   z  
+ 5   ObjPos   ObjOffset   Print   ObjPos 
+   и   мы   увидеть   на   экран
+   x   4   y   3   z   8   AngelScript   поддерживать   свойство   выглядеть
+   это   так   class   MyObj   type 
+   get _ ValueName   type   set _
+ ValueName   type   Val   MyObj   a   type   tmp   a   ValueName   вызываться  
+ get _ ValueName   a   ValueName   tmp   вызываться   set _ ValueName   также   свойство 
+
+   поддерживаться   для   оператор   индекс   class   MyObj   float   get _ opIndex   int
+   idx   void   set _ opIndex   int   idx   float   value   MyObj   a
+   float   val 
+   a   1   вызываться   get _ opIndex   a   2  
+ val   вызываться   set _ opIndex   проблема   во   время   изучение   язык   AngelScript  
+ появляться   несколько   проблема   решение   который 
+   отнимать   у   я   довольно   много
+   время   вот   список   проблема   о   который   я   хотеть   бы   рассказывать
+   регистрация   перегружать   функция   регистрация   перегружать 
+   метод   получение   адрес   на  
+ переменный   объявлять   в   класс   регистрация   перегружать   функция   очень   часто   возникать  
+ необходимость   объявлять   перегружать   функция   для   удобство 
+   чтение   и   понимание   код
+   например   void   Print   string   val   cout   val   data   void   Print
+   int   val   cout   val   void   Print 
+   float   val   cout  
+ val   void   Print   float3   val   cout   x   val   x   y  
+ val   y   z   val   z   обычный   регистрация 
+   вызывать   ошибка   g
+ _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL
+   ошибка   так   как   компилятор   не   понимать   адрес   какой   из 
+  
+ четыре   функция   нужно   передавать   то   на   ум   приходить   два   решение  
+ создавать   typedef   нужный   функция   и   осуществлять   приведение   тип   создавать   переменный 
+
+   указатель   на   нужный   функция   и   передавать   он   вот   как   выглядеть
+   второй   решение   void   PrintS   string   val   Print   void   PrintI   int
+ 
+   val   Print   void   PritnF   float   val   Print   void   PrintF3  
+ float3   val   Print   g _ Engine   RegisterGlobalFunction   void   Print   string   val  
+ asFUNCTION   PrintS 
+   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   int
+   val   asFUNCTION   PrintI   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print
+   float   val   asFUNCTION   PritnF   asCALL _ CDECL   g _ Engine 
+   RegisterGlobalFunction  
+ void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   регистрация   перегружать  
+ метод   с   данный   проблема   вы   сталкиваться   если   захотеть   зарегистрировать   оператор 
+
+   присваивание   давать   для   пример   модифицировать   наш   класс   class   float3   public
+   RefC   public   float   x   float   y   float   z   float3   x
+ 
+   y   z   0   void   Normalize   float   Len   sqrt   x  
+ x   y   y   z   z   Len   Len   Len   1   x  
+ Len 
+   y   Len   z   Len   float3   operator   float3  _ rval   x
+  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef
+   return 
+   this   float3   operator   float3  _ rval   x  _ rval   x  
+ y  _ rval   y   z  _ rval   z   this   AddRef   return   this  
+ обычный   регистрация 
+   вызывать   ошибка   g _ Engine   RegisterObjectMethod   float3   float3   opAssign
+   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   ошибка   решение   который
+   подходить   для   функция   тут 
+   не   подходить   для   решение   проблема  
+ надо   внимательно   взглядывать   на   макрос   asMETHOD   он   выглядеть   так   define  
+ asMETHOD   c   m   asSMethodPtr   Convert 
+   void   c   c   m   соответственно
+   чтобы   мы   зарегистрировать   метод   нужно   конвертировать   он   тогда   наш   регистрация
+   быть   выглядеть   так   g _ Engine   RegisterObjectMethod 
+   float3   float3   opAssign  
+ float3  _ rval   asSMethodPtr   Convert   float3   float3   float3   float3   operator   asCALL _
+ THISCALL   получение   адрес   на   переменный   объявлять   в   класс 
+   если   с
+   глобальный   переменный   дело   обстоять   предельно   просто   то   с   переменный   в
+   предел   класс   все   немного   сложный   стандартный   средство   не 
+   позволять  
+ получать   ID   переменная   по   ее   имя   или   объявление   поэтому   для  
+ это   необходимо   проходиться   по   весь   переменный   в   класс   сам 
+   и
+   сравнивать   имя   для   поиск   адрес   по   имя   переменная   мы   потребоваться
+   сам   имя   и   указатель   на   экземпляр   класс   скрипт   функция 
+  
+ быть   выглядеть   так   void   GetPropAddress   const   char   Name   asIScriptObject   ScriptObject  
+ for   int   i   0   iGetPropertyCount   i   if   strcmp   ScriptObject   GetPropertyName 
+
+   i   Name   return   ScriptObject   GetAddressOfProperty   i   return   0   вот   и
+   все   что   я   хотеться   бы   рассказывать   да   я   не   освещать
+ 
+   момент   касаться   JIT   и   шаблон   но   это   только   потому  
+ что   еще   не   разбираться   с   это   по   мера   изучение   быть  
+ обновлять 
+   статья   Angel   Script   Example   полезный   ссылка   сайт   разработчик   http
+   www   angelcode   com   SVN   репозиторий   на   WIP   https   angelscript   svn
+   sourceforge 
+   net   svnroot   angelscript   trunk   русский   мануал   http   13d  
+ labs   com   angelscript _ manual   main   html   мануал   на   английский   http  
+ www   angelcode   com 
+   angelscript   sdk   docs   manual   index   html   JIT
+   компилятор   https   github   com   BlindMindStudios   AngelScript   JIT   Compiler   AngelScript   скрипт
+   2   ноябрь   2011 
+   обновление   1   мара   2012   комментарий   169  
+ убирать   реклама   контакт   сообщество   участник   каталог   сайт   категория   архив   новость  
+ GameDev   ru   разработка   игра 
+   2001   2019 
+ AngelScript общий статья программирование игра новость статья код арт дизайн индустрия подсказка термин FAQ страница сообщество форум качалка участник
+ пользователь темный тема публикация проект форум работа входить программированиестатьиобщий AngelScript автор константин гиляровский в данный статья я хотеться бы показывать
+ почему я понравиться скриптовый язык AngelScript когда я выбирать язык для свой движок я просматривать множество кандидатура и для подробный
+ рассмотрение выбирать два скриптовый язык они быть LUA и Python введение превивать особенность проблема регистрация перегружать функция регистрация перегружать метод
+ получение адрес на переменный объявлять в класс полезный ссылка введение в процесс рассмотрение LUA и Python я выделять для себя
+ что LUA являться достаточно быстрый но с немного непривычный синтаксис Python же обладать очень простой синтаксис и масса полезный библиотека
+ но к сожаление он оказываться довольно медленный и он довольно тяжело привязывать к с и тут на работа я подсказывать
+ использовать AngelScript мол он удобный для связка быстро LUA и иметь с подобный синтаксис как только я начинать он изучать
+ я понимать что это тот самый скриптовый язык мой мечта превивать вот что можно прочитывать про этот язык на википедия
+ AngelScript представлять себя движок в который приложение мочь регистрировать функция свойство и тип который мочь использоваться в скрипт скрипт компилироваться
+ в модуль количество использовать модуль варьрироваться в зависимость от нужда приложение мочь также использовать различный интерфейс для каждый модуль с
+ помощь группа конфигурация это особенно полезный когда приложение работать с несколько тип скрипт например GUI AI и т д программа
+ Hello world в простой случай выглядеть так void main print Hello world n да синтаксис язык радовать с самый начало
+ язык поддерживать как метод функциональный программирование так и ооп с самый начало он подкупать свой простота регистрация функция переменный тип
+ например регистрация глобальный переменная g _ Engine RegisterGlobalProperty int SomeVal SomeVal где SomeVal это переменный тип int регистрация глобальный функция
+ g _ Engine RegisterGlobalFunction void Print string val asFUNCTION Print asCALL _ CDECL void Print string val cout val data
+ да для AngelScript не нужно писать функция биндинг что являться огроменный плюс в сравнение с другой язык для регистрация свой
+ тип приходиться написать парочка функция фабрика для создание экземпляр и счетчик ссылка для тип тип ссылка и вызов конструктор и
+ деструктор для объект тип тип значение например у мы быть класс float3 который мы хотеть бы зарегистрировать класс счетчик ссылка
+ class RefC private int refC public RefC refC 1 void AddRef refC void Release if refC delete this класс который
+ мы хотеть зарегистрировать class float3 public RefC public float x float y float z float3 x y z 0 void
+ Normalize float Len sqrt x x y y z z Len Len Len 1 x Len y Len z Len
+ фабрика float3 Float3FactoryE return new float3 функция вывод на экран void PrintF3 float3 val cout x val x y val
+ y z val z для это мы регистрировать объект как тип ссылка и указывать он фабрика счетчик ссылка метод и
+ функция вывод данные на экран и вот как это выглядеть g _ Engine RegisterObjectType float3 0 asOBJ _ REF g
+ _ Engine RegisterObjectMethod float3 void Normalize asMETHOD float3 Normalize asCALL _ THISCALL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ FACTORY
+ float3 new _ float3 asFUNCTION Float3FactoryE asCALL _ CDECL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ ADDREF void AddRef asMETHOD
+ float3 AddRef asCALL _ THISCALL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ RELEASE void Release asMETHOD float3 Release asCALL _
+ THISCALL g _ Engine RegisterGlobalFunction void Print float3 val asFUNCTION PrintF3 asCALL _ CDECL мы на это конечно же не
+ останавливаться так как мы нужный доступ к значение xyz поэтому они мы тоже должный зарегистрировать что мы и делать написать
+ g _ Engine RegisterObjectProperty float3 float x offsetof float3 x g _ Engine RegisterObjectProperty float3 float y offsetof float3 y
+ g _ Engine RegisterObjectProperty float3 float z offsetof float3 z все предельно простой и понятно теперь в скрипт можно написать
+ float3 ObjPos ObjPos x 1 ObjPos y 2 ObjPos z 3 ObjPos Normalize Print ObjPos выполнять этот скрипт мы увидеть
+ на экран значение нормализовать вектор особенность я очень порадовать возможность перегрузка оператор в AngelScript в с для это существовать ключевой
+ слово operator и символ оператор AngelScript для это использовать определенный функция вот полный список соответствие opNeg opCom opPreInc opPreDec opPostInc
+ opPostDec opEquals opEquals opCmp opCmp opCmp opCmp opAssign opAddAssign opSubAssign opMulAssign opDivAssign opAndAssign opOrAssign opXorAssign opModAssign opShlAssign opShrAssign opUShrAssign opAdd
+ opAdd _ r opSub opSub _ r opMul opMul _ r opDiv opDiv _ r opMod opMod _ r opAnd
+ opAnd _ r opOr opOr _ r opXor opXor _ r opShl opShl _ r opShr opShr _ r opUShr
+ opUShr _ r opIndex допускать мы хотеть сделать возможность чтобы наш вектор поддерживать прибавление к себя другой вектор для это
+ слегка модифицировать наш класс class float3 public RefC public float x float y float z float3 x y z 0
+ void Normalize float Len sqrt x x y y z z Len Len Len 1 x Len y Len z
+ Len float3 operator float3  _ rval x  _ rval x y  _ rval y z  _ rval z this AddRef
+ return this оставаться только зарегистрировать новый метод g _ Engine RegisterObjectMethod float3 float3 opAddAssign float3  _ rval asMETHOD float3 operator
+ asCALL _ THISCALL и теперь можно спокойно писать так float3 ObjPos ObjPos x 1 ObjPos y 2 ObjPos z 3
+ float3 ObjOffset ObjOffset x 3 ObjOffset y 1 ObjOffset z 5 ObjPos ObjOffset Print ObjPos и мы увидеть на экран
+ x 4 y 3 z 8 AngelScript поддерживать свойство выглядеть это так class MyObj type get _ ValueName type set
+ _ ValueName type Val MyObj a type tmp a ValueName вызываться get _ ValueName a ValueName tmp вызываться set _
+ ValueName также свойство поддерживаться для оператор индекс class MyObj float get _ opIndex int idx void set _ opIndex int
+ idx float value MyObj a float val a 1 вызываться get _ opIndex a 2 val вызываться set _ opIndex
+ проблема во время изучение язык AngelScript появляться несколько проблема решение который отнимать у я довольно много время вот список проблема
+ о который я хотеть бы рассказывать регистрация перегружать функция регистрация перегружать метод получение адрес на переменный объявлять в класс регистрация
+ перегружать функция очень часто возникать необходимость объявлять перегружать функция для удобство чтение и понимание код например void Print string val
+ cout val data void Print int val cout val void Print float val cout val void Print float3 val cout
+ x val x y val y z val z обычный регистрация вызывать ошибка g _ Engine RegisterGlobalFunction void Print string
+ val asFUNCTION Print asCALL _ CDECL ошибка так как компилятор не понимать адрес какой из четыре функция нужно передавать то
+ на ум приходить два решение создавать typedef нужный функция и осуществлять приведение тип создавать переменный указатель на нужный функция и
+ передавать он вот как выглядеть второй решение void PrintS string val Print void PrintI int val Print void PritnF float
+ val Print void PrintF3 float3 val Print g _ Engine RegisterGlobalFunction void Print string val asFUNCTION PrintS asCALL _ CDECL
+ g _ Engine RegisterGlobalFunction void Print int val asFUNCTION PrintI asCALL _ CDECL g _ Engine RegisterGlobalFunction void Print float
+ val asFUNCTION PritnF asCALL _ CDECL g _ Engine RegisterGlobalFunction void Print float3 val asFUNCTION PrintF3 asCALL _ CDECL регистрация
+ перегружать метод с данный проблема вы сталкиваться если захотеть зарегистрировать оператор присваивание давать для пример модифицировать наш класс class float3
+ public RefC public float x float y float z float3 x y z 0 void Normalize float Len sqrt x
+ x y y z z Len Len Len 1 x Len y Len z Len float3 operator float3  _ rval
+ x  _ rval x y  _ rval y z  _ rval z this AddRef return this float3 operator float3  _
+ rval x  _ rval x y  _ rval y z  _ rval z this AddRef return this обычный регистрация вызывать
+ ошибка g _ Engine RegisterObjectMethod float3 float3 opAssign float3  _ rval asMETHOD float3 operator asCALL _ THISCALL ошибка решение который
+ подходить для функция тут не подходить для решение проблема надо внимательно взглядывать на макрос asMETHOD он выглядеть так define asMETHOD
+ c m asSMethodPtr Convert void c c m соответственно чтобы мы зарегистрировать метод нужно конвертировать он тогда наш регистрация быть
+ выглядеть так g _ Engine RegisterObjectMethod float3 float3 opAssign float3  _ rval asSMethodPtr Convert float3 float3 float3 float3 operator asCALL
+ _ THISCALL получение адрес на переменный объявлять в класс если с глобальный переменный дело обстоять предельно просто то с переменный
+ в предел класс все немного сложный стандартный средство не позволять получать ID переменная по ее имя или объявление поэтому для
+ это необходимо проходиться по весь переменный в класс сам и сравнивать имя для поиск адрес по имя переменная мы потребоваться
+ сам имя и указатель на экземпляр класс скрипт функция быть выглядеть так void GetPropAddress const char Name asIScriptObject ScriptObject for
+ int i 0 iGetPropertyCount i if strcmp ScriptObject GetPropertyName i Name return ScriptObject GetAddressOfProperty i return 0 вот и все
+ что я хотеться бы рассказывать да я не освещать момент касаться JIT и шаблон но это только потому что еще
+ не разбираться с это по мера изучение быть обновлять статья Angel Script Example полезный ссылка сайт разработчик http www angelcode
+ com SVN репозиторий на WIP https angelscript svn sourceforge net svnroot angelscript trunk русский мануал http 13d labs com angelscript
+ _ manual main html мануал на английский http www angelcode com angelscript sdk docs manual index html JIT компилятор https
+ github com BlindMindStudios AngelScript JIT Compiler AngelScript скрипт 2 ноябрь 2011 обновление 1 мара 2012 комментарий 169 убирать реклама контакт
+ сообщество участник каталог сайт категория архив новость GameDev ru разработка игра 2001 2019 AngelScript общий статья программирование игра новость статья код арт дизайн индустрия подсказка термин FAQ страница сообщество форум качалка участник
+ пользователь темный тема публикация проект форум работа входить программированиестатьиобщий AngelScript автор константин гиляровский в данный статья я хотеться бы показывать
+ почему я понравиться скриптовый язык AngelScript когда я выбирать язык для свой движок я просматривать множество кандидатура и для подробный
+ рассмотрение выбирать два скриптовый язык они быть LUA и Python введение превивать особенность проблема регистрация перегружать функция регистрация перегружать метод
+ получение адрес на переменный объявлять в класс полезный ссылка введение в процесс рассмотрение LUA и Python я выделять для себя
+ что LUA являться достаточно быстрый но с немного непривычный синтаксис Python же обладать очень простой синтаксис и масса полезный библиотека
+ но к сожаление он оказываться довольно медленный и он довольно тяжело привязывать к с и тут на работа я подсказывать
+ использовать AngelScript мол он удобный для связка быстро LUA и иметь с подобный синтаксис как только я начинать он изучать
+ я понимать что это тот самый скриптовый язык мой мечта превивать вот что можно прочитывать про этот язык на википедия
+ AngelScript представлять себя движок в который приложение мочь регистрировать функция свойство и тип который мочь использоваться в скрипт скрипт компилироваться
+ в модуль количество использовать модуль варьрироваться в зависимость от нужда приложение мочь также использовать различный интерфейс для каждый модуль с
+ помощь группа конфигурация это особенно полезный когда приложение работать с несколько тип скрипт например GUI AI и т д программа
+ Hello world в простой случай выглядеть так void main print Hello world n да синтаксис язык радовать с самый начало
+ язык поддерживать как метод функциональный программирование так и ооп с самый начало он подкупать свой простота регистрация функция переменный тип
+ например регистрация глобальный переменная g _ Engine RegisterGlobalProperty int SomeVal SomeVal где SomeVal это переменный тип int регистрация глобальный функция
+ g _ Engine RegisterGlobalFunction void Print string val asFUNCTION Print asCALL _ CDECL void Print string val cout val data
+ да для AngelScript не нужно писать функция биндинг что являться огроменный плюс в сравнение с другой язык для регистрация свой
+ тип приходиться написать парочка функция фабрика для создание экземпляр и счетчик ссылка для тип тип ссылка и вызов конструктор и
+ деструктор для объект тип тип значение например у мы быть класс float3 который мы хотеть бы зарегистрировать класс счетчик ссылка
+ class RefC private int refC public RefC refC 1 void AddRef refC void Release if refC delete this класс который
+ мы хотеть зарегистрировать class float3 public RefC public float x float y float z float3 x y z 0 void
+ Normalize float Len sqrt x x y y z z Len Len Len 1 x Len y Len z Len
+ фабрика float3 Float3FactoryE return new float3 функция вывод на экран void PrintF3 float3 val cout x val x y val
+ y z val z для это мы регистрировать объект как тип ссылка и указывать он фабрика счетчик ссылка метод и
+ функция вывод данные на экран и вот как это выглядеть g _ Engine RegisterObjectType float3 0 asOBJ _ REF g
+ _ Engine RegisterObjectMethod float3 void Normalize asMETHOD float3 Normalize asCALL _ THISCALL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ FACTORY
+ float3 new _ float3 asFUNCTION Float3FactoryE asCALL _ CDECL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ ADDREF void AddRef asMETHOD
+ float3 AddRef asCALL _ THISCALL g _ Engine RegisterObjectBehaviour float3 asBEHAVE _ RELEASE void Release asMETHOD float3 Release asCALL _
+ THISCALL g _ Engine RegisterGlobalFunction void Print float3 val asFUNCTION PrintF3 asCALL _ CDECL мы на это конечно же не
+ останавливаться так как мы нужный доступ к значение xyz поэтому они мы тоже должный зарегистрировать что мы и делать написать
+ g _ Engine RegisterObjectProperty float3 float x offsetof float3 x g _ Engine RegisterObjectProperty float3 float y offsetof float3 y
+ g _ Engine RegisterObjectProperty float3 float z offsetof float3 z все предельно простой и понятно теперь в скрипт можно написать
+ float3 ObjPos ObjPos x 1 ObjPos y 2 ObjPos z 3 ObjPos Normalize Print ObjPos выполнять этот скрипт мы увидеть
+ на экран значение нормализовать вектор особенность я очень порадовать возможность перегрузка оператор в AngelScript в с для это существовать ключевой
+ слово operator и символ оператор AngelScript для это использовать определенный функция вот полный список соответствие opNeg opCom opPreInc opPreDec opPostInc
+ opPostDec opEquals opEquals opCmp opCmp opCmp opCmp opAssign opAddAssign opSubAssign opMulAssign opDivAssign opAndAssign opOrAssign opXorAssign opModAssign opShlAssign opShrAssign opUShrAssign opAdd
+ opAdd _ r opSub opSub _ r opMul opMul _ r opDiv opDiv _ r opMod opMod _ r opAnd
+ opAnd _ r opOr opOr _ r opXor opXor _ r opShl opShl _ r opShr opShr _ r opUShr
+ opUShr _ r opIndex допускать мы хотеть сделать возможность чтобы наш вектор поддерживать прибавление к себя другой вектор для это
+ слегка модифицировать наш класс class float3 public RefC public float x float y float z float3 x y z 0
+ void Normalize float Len sqrt x x y y z z Len Len Len 1 x Len y Len z
+ Len float3 operator float3  _ rval x  _ rval x y  _ rval y z  _ rval z this AddRef
+ return this оставаться только зарегистрировать новый метод g _ Engine RegisterObjectMethod float3 float3 opAddAssign float3  _ rval asMETHOD float3 operator
+ asCALL _ THISCALL и теперь можно спокойно писать так float3 ObjPos ObjPos x 1 ObjPos y 2 ObjPos z 3
+ float3 ObjOffset ObjOffset x 3 ObjOffset y 1 ObjOffset z 5 ObjPos ObjOffset Print ObjPos и мы увидеть на экран
+ x 4 y 3 z 8 AngelScript поддерживать свойство выглядеть это так class MyObj type get _ ValueName type set
+ _ ValueName type Val MyObj a type tmp a ValueName вызываться get _ ValueName a ValueName tmp вызываться set _
+ ValueName также свойство поддерживаться для оператор индекс class MyObj float get _ opIndex int idx void set _ opIndex int
+ idx float value MyObj a float val a 1 вызываться get _ opIndex a 2 val вызываться set _ opIndex
+ проблема во время изучение язык AngelScript появляться несколько проблема решение который отнимать у я довольно много время вот список проблема
+ о который я хотеть бы рассказывать регистрация перегружать функция регистрация перегружать метод получение адрес на переменный объявлять в класс регистрация
+ перегружать функция очень часто возникать необходимость объявлять перегружать функция для удобство чтение и понимание код например void Print string val
+ cout val data void Print int val cout val void Print float val cout val void Print float3 val cout
+ x val x y val y z val z обычный регистрация вызывать ошибка g _ Engine RegisterGlobalFunction void Print string
+ val asFUNCTION Print asCALL _ CDECL ошибка так как компилятор не понимать адрес какой из четыре функция нужно передавать то
+ на ум приходить два решение создавать typedef нужный функция и осуществлять приведение тип создавать переменный указатель на нужный функция и
+ передавать он вот как выглядеть второй решение void PrintS string val Print void PrintI int val Print void PritnF float
+ val Print void PrintF3 float3 val Print g _ Engine RegisterGlobalFunction void Print string val asFUNCTION PrintS asCALL _ CDECL
+ g _ Engine RegisterGlobalFunction void Print int val asFUNCTION PrintI asCALL _ CDECL g _ Engine RegisterGlobalFunction void Print float
+ val asFUNCTION PritnF asCALL _ CDECL g _ Engine RegisterGlobalFunction void Print float3 val asFUNCTION PrintF3 asCALL _ CDECL регистрация
+ перегружать метод с данный проблема вы сталкиваться если захотеть зарегистрировать оператор присваивание давать для пример модифицировать наш класс class float3
+ public RefC public float x float y float z float3 x y z 0 void Normalize float Len sqrt x
+ x y y z z Len Len Len 1 x Len y Len z Len float3 operator float3  _ rval
+ x  _ rval x y  _ rval y z  _ rval z this AddRef return this float3 operator float3  _
+ rval x  _ rval x y  _ rval y z  _ rval z this AddRef return this обычный регистрация вызывать
+ ошибка g _ Engine RegisterObjectMethod float3 float3 opAssign float3  _ rval asMETHOD float3 operator asCALL _ THISCALL ошибка решение который
+ подходить для функция тут не подходить для решение проблема надо внимательно взглядывать на макрос asMETHOD он выглядеть так define asMETHOD
+ c m asSMethodPtr Convert void c c m соответственно чтобы мы зарегистрировать метод нужно конвертировать он тогда наш регистрация быть
+ выглядеть так g _ Engine RegisterObjectMethod float3 float3 opAssign float3  _ rval asSMethodPtr Convert float3 float3 float3 float3 operator asCALL
+ _ THISCALL получение адрес на переменный объявлять в класс если с глобальный переменный дело обстоять предельно просто то с переменный
+ в предел класс все немного сложный стандартный средство не позволять получать ID переменная по ее имя или объявление поэтому для
+ это необходимо проходиться по весь переменный в класс сам и сравнивать имя для поиск адрес по имя переменная мы потребоваться
+ сам имя и указатель на экземпляр класс скрипт функция быть выглядеть так void GetPropAddress const char Name asIScriptObject ScriptObject for
+ int i 0 iGetPropertyCount i if strcmp ScriptObject GetPropertyName i Name return ScriptObject GetAddressOfProperty i return 0 вот и все
+ что я хотеться бы рассказывать да я не освещать момент касаться JIT и шаблон но это только потому что еще
+ не разбираться с это по мера изучение быть обновлять статья Angel Script Example полезный ссылка сайт разработчик http www angelcode
+ com SVN репозиторий на WIP https angelscript svn sourceforge net svnroot angelscript trunk русский мануал http 13d labs com angelscript
+ _ manual main html мануал на английский http www angelcode com angelscript sdk docs manual index html JIT компилятор https
+ github com BlindMindStudios AngelScript JIT Compiler AngelScript скрипт 2 ноябрь 2011 обновление 1 мара 2012 комментарий 169 убирать реклама контакт
+ сообщество участник каталог сайт категория архив новость GameDev ru разработка игра 2001 2019   AngelScript   общий   статья   программирование   игра   новость   статья   код   арт  
+ дизайн   индустрия   подсказка   термин   FAQ   страница   сообщество   форум   качалка   участник  
+ пользователь   темный   тема   публикация   проект   форум   работа   входить   программированиестатьиобщий   AngelScript  
+ автор   константин   гиляровский   в   данный   статья   я   хотеться   бы   показывать  
+ почему   я   понравиться   скриптовый   язык   AngelScript   когда   я   выбирать   язык  
+ для   свой   движок   я   просматривать   множество   кандидатура   и   для   подробный  
+ рассмотрение   выбирать   два   скриптовый   язык   они   быть   LUA   и   Python  
+ введение   превивать   особенность   проблема   регистрация   перегружать   функция   регистрация   перегружать   метод  
+ получение   адрес   на   переменный   объявлять   в   класс   полезный   ссылка   введение  
+ в   процесс   рассмотрение   LUA   и   Python   я   выделять   для   себя  
+ что   LUA   являться   достаточно   быстрый   но   с   немного   непривычный   синтаксис  
+ Python   же   обладать   очень   простой   синтаксис   и   масса   полезный   библиотека  
+ но   к   сожаление   он   оказываться   довольно   медленный   и   он   довольно  
+ тяжело   привязывать   к   с   и   тут   на   работа   я   подсказывать  
+ использовать   AngelScript   мол   он   удобный   для   связка   быстро   LUA   и  
+ иметь   с   подобный   синтаксис   как   только   я   начинать   он   изучать  
+ я   понимать   что   это   тот   самый   скриптовый   язык   мой   мечта  
+ превивать   вот   что   можно   прочитывать   про   этот   язык   на   википедия  
+ AngelScript   представлять   себя   движок   в   который   приложение   мочь   регистрировать   функция  
+ свойство   и   тип   который   мочь   использоваться   в   скрипт   скрипт   компилироваться  
+ в   модуль   количество   использовать   модуль   варьрироваться   в   зависимость   от   нужда  
+ приложение   мочь   также   использовать   различный   интерфейс   для   каждый   модуль   с  
+ помощь   группа   конфигурация   это   особенно   полезный   когда   приложение   работать   с  
+ несколько   тип   скрипт   например   GUI   AI   и   т   д   программа  
+ Hello   world   в   простой   случай   выглядеть   так   void   main   print  
+ Hello   world   n   да   синтаксис   язык   радовать   с   самый   начало  
+ язык   поддерживать   как   метод   функциональный   программирование   так   и   ооп   с  
+ самый   начало   он   подкупать   свой   простота   регистрация   функция   переменный   тип  
+ например   регистрация   глобальный   переменная   g _ Engine   RegisterGlobalProperty   int   SomeVal   SomeVal  
+ где   SomeVal   это   переменный   тип   int   регистрация   глобальный   функция   g _
+ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL  
+ void   Print   string   val   cout   val   data   да   для   AngelScript  
+ не   нужно   писать   функция   биндинг   что   являться   огроменный   плюс   в  
+ сравнение   с   другой   язык   для   регистрация   свой   тип   приходиться   написать  
+ парочка   функция   фабрика   для   создание   экземпляр   и   счетчик   ссылка   для  
+ тип   тип   ссылка   и   вызов   конструктор   и   деструктор   для   объект  
+ тип   тип   значение   например   у   мы   быть   класс   float3   который  
+ мы   хотеть   бы   зарегистрировать   класс   счетчик   ссылка   class   RefC   private  
+ int   refC   public   RefC   refC   1   void   AddRef   refC   void  
+ Release   if   refC   delete   this   класс   который   мы   хотеть   зарегистрировать  
+ class   float3   public   RefC   public   float   x   float   y   float  
+ z   float3   x   y   z   0   void   Normalize   float   Len  
+ sqrt   x   x   y   y   z   z   Len   Len   Len  
+ 1   x   Len   y   Len   z   Len   фабрика   float3   Float3FactoryE  
+ return   new   float3   функция   вывод   на   экран   void   PrintF3   float3  
+ val   cout   x   val   x   y   val   y   z   val  
+ z   для   это   мы   регистрировать   объект   как   тип   ссылка   и  
+ указывать   он   фабрика   счетчик   ссылка   метод   и   функция   вывод   данные  
+ на   экран   и   вот   как   это   выглядеть   g _ Engine   RegisterObjectType  
+ float3   0   asOBJ _ REF   g _ Engine   RegisterObjectMethod   float3   void   Normalize  
+ asMETHOD   float3   Normalize   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _
+ FACTORY   float3   new _ float3   asFUNCTION   Float3FactoryE   asCALL _ CDECL   g _ Engine  
+ RegisterObjectBehaviour   float3   asBEHAVE _ ADDREF   void   AddRef   asMETHOD   float3   AddRef   asCALL _
+ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ RELEASE   void   Release   asMETHOD  
+ float3   Release   asCALL _ THISCALL   g _ Engine   RegisterGlobalFunction   void   Print   float3  
+ val   asFUNCTION   PrintF3   asCALL _ CDECL   мы   на   это   конечно   же  
+ не   останавливаться   так   как   мы   нужный   доступ   к   значение   xyz  
+ поэтому   они   мы   тоже   должный   зарегистрировать   что   мы   и   делать  
+ написать   g _ Engine   RegisterObjectProperty   float3   float   x   offsetof   float3   x  
+ g _ Engine   RegisterObjectProperty   float3   float   y   offsetof   float3   y   g _
+ Engine   RegisterObjectProperty   float3   float   z   offsetof   float3   z   все   предельно  
+ простой   и   понятно   теперь   в   скрипт   можно   написать   float3   ObjPos  
+ ObjPos   x   1   ObjPos   y   2   ObjPos   z   3   ObjPos  
+ Normalize   Print   ObjPos   выполнять   этот   скрипт   мы   увидеть   на   экран  
+ значение   нормализовать   вектор   особенность   я   очень   порадовать   возможность   перегрузка   оператор  
+ в   AngelScript   в   с   для   это   существовать   ключевой   слово   operator  
+ и   символ   оператор   AngelScript   для   это   использовать   определенный   функция   вот  
+ полный   список   соответствие   opNeg   opCom   opPreInc   opPreDec   opPostInc   opPostDec   opEquals  
+ opEquals   opCmp   opCmp   opCmp   opCmp   opAssign   opAddAssign   opSubAssign   opMulAssign   opDivAssign  
+ opAndAssign   opOrAssign   opXorAssign   opModAssign   opShlAssign   opShrAssign   opUShrAssign   opAdd   opAdd _ r  
+ opSub   opSub _ r   opMul   opMul _ r   opDiv   opDiv _ r   opMod  
+ opMod _ r   opAnd   opAnd _ r   opOr   opOr _ r   opXor   opXor _
+ r   opShl   opShl _ r   opShr   opShr _ r   opUShr   opUShr _ r  
+ opIndex   допускать   мы   хотеть   сделать   возможность   чтобы   наш   вектор   поддерживать  
+ прибавление   к   себя   другой   вектор   для   это   слегка   модифицировать   наш  
+ класс   class   float3   public   RefC   public   float   x   float   y  
+ float   z   float3   x   y   z   0   void   Normalize   float  
+ Len   sqrt   x   x   y   y   z   z   Len   Len  
+ Len   1   x   Len   y   Len   z   Len   float3   operator  
+ float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval  
+ z   this   AddRef   return   this   оставаться   только   зарегистрировать   новый   метод  
+ g _ Engine   RegisterObjectMethod   float3   float3   opAddAssign   float3  _ rval   asMETHOD   float3  
+ operator   asCALL _ THISCALL   и   теперь   можно   спокойно   писать   так   float3  
+ ObjPos   ObjPos   x   1   ObjPos   y   2   ObjPos   z   3  
+ float3   ObjOffset   ObjOffset   x   3   ObjOffset   y   1   ObjOffset   z  
+ 5   ObjPos   ObjOffset   Print   ObjPos   и   мы   увидеть   на   экран  
+ x   4   y   3   z   8   AngelScript   поддерживать   свойство   выглядеть  
+ это   так   class   MyObj   type   get _ ValueName   type   set _ ValueName  
+ type   Val   MyObj   a   type   tmp   a   ValueName   вызываться   get _
+ ValueName   a   ValueName   tmp   вызываться   set _ ValueName   также   свойство   поддерживаться  
+ для   оператор   индекс   class   MyObj   float   get _ opIndex   int   idx  
+ void   set _ opIndex   int   idx   float   value   MyObj   a   float  
+ val   a   1   вызываться   get _ opIndex   a   2   val   вызываться  
+ set _ opIndex   проблема   во   время   изучение   язык   AngelScript   появляться   несколько  
+ проблема   решение   который   отнимать   у   я   довольно   много   время   вот  
+ список   проблема   о   который   я   хотеть   бы   рассказывать   регистрация   перегружать  
+ функция   регистрация   перегружать   метод   получение   адрес   на   переменный   объявлять   в  
+ класс   регистрация   перегружать   функция   очень   часто   возникать   необходимость   объявлять   перегружать  
+ функция   для   удобство   чтение   и   понимание   код   например   void   Print  
+ string   val   cout   val   data   void   Print   int   val   cout  
+ val   void   Print   float   val   cout   val   void   Print   float3  
+ val   cout   x   val   x   y   val   y   z   val  
+ z   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterGlobalFunction   void   Print  
+ string   val   asFUNCTION   Print   asCALL _ CDECL   ошибка   так   как   компилятор  
+ не   понимать   адрес   какой   из   четыре   функция   нужно   передавать   то  
+ на   ум   приходить   два   решение   создавать   typedef   нужный   функция   и  
+ осуществлять   приведение   тип   создавать   переменный   указатель   на   нужный   функция   и  
+ передавать   он   вот   как   выглядеть   второй   решение   void   PrintS   string  
+ val   Print   void   PrintI   int   val   Print   void   PritnF   float  
+ val   Print   void   PrintF3   float3   val   Print   g _ Engine   RegisterGlobalFunction  
+ void   Print   string   val   asFUNCTION   PrintS   asCALL _ CDECL   g _ Engine  
+ RegisterGlobalFunction   void   Print   int   val   asFUNCTION   PrintI   asCALL _ CDECL   g _
+ Engine   RegisterGlobalFunction   void   Print   float   val   asFUNCTION   PritnF   asCALL _ CDECL  
+ g _ Engine   RegisterGlobalFunction   void   Print   float3   val   asFUNCTION   PrintF3   asCALL _
+ CDECL   регистрация   перегружать   метод   с   данный   проблема   вы   сталкиваться   если  
+ захотеть   зарегистрировать   оператор   присваивание   давать   для   пример   модифицировать   наш   класс  
+ class   float3   public   RefC   public   float   x   float   y   float  
+ z   float3   x   y   z   0   void   Normalize   float   Len  
+ sqrt   x   x   y   y   z   z   Len   Len   Len  
+ 1   x   Len   y   Len   z   Len   float3   operator   float3  _
+ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z  
+ this   AddRef   return   this   float3   operator   float3  _ rval   x  _ rval  
+ x   y  _ rval   y   z  _ rval   z   this   AddRef   return  
+ this   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterObjectMethod   float3   float3  
+ opAssign   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   ошибка   решение  
+ который   подходить   для   функция   тут   не   подходить   для   решение   проблема  
+ надо   внимательно   взглядывать   на   макрос   asMETHOD   он   выглядеть   так   define  
+ asMETHOD   c   m   asSMethodPtr   Convert   void   c   c   m   соответственно  
+ чтобы   мы   зарегистрировать   метод   нужно   конвертировать   он   тогда   наш   регистрация  
+ быть   выглядеть   так   g _ Engine   RegisterObjectMethod   float3   float3   opAssign   float3  _
+ rval   asSMethodPtr   Convert   float3   float3   float3   float3   operator   asCALL _ THISCALL  
+ получение   адрес   на   переменный   объявлять   в   класс   если   с   глобальный  
+ переменный   дело   обстоять   предельно   просто   то   с   переменный   в   предел  
+ класс   все   немного   сложный   стандартный   средство   не   позволять   получать   ID  
+ переменная   по   ее   имя   или   объявление   поэтому   для   это   необходимо  
+ проходиться   по   весь   переменный   в   класс   сам   и   сравнивать   имя  
+ для   поиск   адрес   по   имя   переменная   мы   потребоваться   сам   имя  
+ и   указатель   на   экземпляр   класс   скрипт   функция   быть   выглядеть   так  
+ void   GetPropAddress   const   char   Name   asIScriptObject   ScriptObject   for   int   i  
+ 0   iGetPropertyCount   i   if   strcmp   ScriptObject   GetPropertyName   i   Name   return  
+ ScriptObject   GetAddressOfProperty   i   return   0   вот   и   все   что   я  
+ хотеться   бы   рассказывать   да   я   не   освещать   момент   касаться   JIT  
+ и   шаблон   но   это   только   потому   что   еще   не   разбираться  
+ с   это   по   мера   изучение   быть   обновлять   статья   Angel   Script  
+ Example   полезный   ссылка   сайт   разработчик   http   www   angelcode   com   SVN  
+ репозиторий   на   WIP   https   angelscript   svn   sourceforge   net   svnroot   angelscript  
+ trunk   русский   мануал   http   13d   labs   com   angelscript _ manual   main  
+ html   мануал   на   английский   http   www   angelcode   com   angelscript   sdk  
+ docs   manual   index   html   JIT   компилятор   https   github   com   BlindMindStudios  
+ AngelScript   JIT   Compiler   AngelScript   скрипт   2   ноябрь   2011   обновление   1  
+ мара   2012   комментарий   169   убирать   реклама   контакт   сообщество   участник   каталог  
+ сайт   категория   архив   новость   GameDev   ru   разработка   игра   2001   2019   AngelScript   общий   статья   программирование   игра   новость   статья   код   арт   дизайн   индустрия   подсказка   термин   FAQ   страница   сообщество   форум   качалка   участник   пользователь   темный   тема   публикация   проект   форум   работа   входить   программированиестатьиобщий   AngelScript   автор   константин   гиляровский   в   данный   статья   я   хотеться   бы   показывать   почему   я   понравиться   скриптовый   язык   AngelScript   когда   я   выбирать   язык   для   свой   движок   я   просматривать   множество   кандидатура   и   для   подробный   рассмотрение   выбирать   два   скриптовый   язык   они   быть   LUA   и   Python   введение   превивать   особенность   проблема   регистрация   перегружать   функция   регистрация   перегружать   метод   получение   адрес   на   переменный   объявлять   в   класс   полезный   ссылка   введение   в   процесс   рассмотрение   LUA   и   Python   я   выделять   для   себя   что   LUA   являться   достаточно   быстрый   но   с   немного   непривычный   синтаксис   Python   же   обладать   очень   простой   синтаксис   и   масса   полезный   библиотека   но   к   сожаление   он   оказываться   довольно   медленный   и   он   довольно   тяжело   привязывать   к   с   и   тут   на   работа   я   подсказывать   использовать   AngelScript   мол   он   удобный   для   связка   быстро   LUA   и   иметь   с   подобный   синтаксис   как   только   я   начинать   он   изучать   я   понимать   что   это   тот   самый   скриптовый   язык   мой   мечта   превивать   вот   что   можно   прочитывать   про   этот   язык   на   википедия   AngelScript   представлять   себя   движок   в   который   приложение   мочь   регистрировать   функция   свойство   и   тип   который   мочь   использоваться   в   скрипт   скрипт   компилироваться   в   модуль   количество   использовать   модуль   варьрироваться   в   зависимость   от   нужда   приложение   мочь   также   использовать   различный   интерфейс   для   каждый   модуль   с   помощь   группа   конфигурация   это   особенно   полезный   когда   приложение   работать   с   несколько   тип   скрипт   например   GUI   AI   и   т   д   программа   Hello   world   в   простой   случай   выглядеть   так   void   main   print   Hello   world   n   да   синтаксис   язык   радовать   с   самый   начало   язык   поддерживать   как   метод   функциональный   программирование   так   и   ооп   с   самый   начало   он   подкупать   свой   простота   регистрация   функция   переменный   тип   например   регистрация   глобальный   переменная   g _ Engine   RegisterGlobalProperty   int   SomeVal   SomeVal   где   SomeVal   это   переменный   тип   int   регистрация   глобальный   функция   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL   void   Print   string   val   cout   val   data   да   для   AngelScript   не   нужно   писать   функция   биндинг   что   являться   огроменный   плюс   в   сравнение   с   другой   язык   для   регистрация   свой   тип   приходиться   написать   парочка   функция   фабрика   для   создание   экземпляр   и   счетчик   ссылка   для   тип   тип   ссылка   и   вызов   конструктор   и   деструктор   для   объект   тип   тип   значение   например   у   мы   быть   класс   float3   который   мы   хотеть   бы   зарегистрировать   класс   счетчик   ссылка   class   RefC   private   int   refC   public   RefC   refC   1   void   AddRef   refC   void   Release   if   refC   delete   this   класс   который   мы   хотеть   зарегистрировать   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   фабрика   float3   Float3FactoryE   return   new   float3   функция   вывод   на   экран   void   PrintF3   float3   val   cout   x   val   x   y   val   y   z   val   z   для   это   мы   регистрировать   объект   как   тип   ссылка   и   указывать   он   фабрика   счетчик   ссылка   метод   и   функция   вывод   данные   на   экран   и   вот   как   это   выглядеть   g _ Engine   RegisterObjectType   float3   0   asOBJ _ REF   g _ Engine   RegisterObjectMethod   float3   void   Normalize   asMETHOD   float3   Normalize   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ FACTORY   float3   new _ float3   asFUNCTION   Float3FactoryE   asCALL _ CDECL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ ADDREF   void   AddRef   asMETHOD   float3   AddRef   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ RELEASE   void   Release   asMETHOD   float3   Release   asCALL _ THISCALL   g _ Engine   RegisterGlobalFunction   void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   мы   на   это   конечно   же   не   останавливаться   так   как   мы   нужный   доступ   к   значение   xyz   поэтому   они   мы   тоже   должный   зарегистрировать   что   мы   и   делать   написать   g _ Engine   RegisterObjectProperty   float3   float   x   offsetof   float3   x   g _ Engine   RegisterObjectProperty   float3   float   y   offsetof   float3   y   g _ Engine   RegisterObjectProperty   float3   float   z   offsetof   float3   z   все   предельно   простой   и   понятно   теперь   в   скрипт   можно   написать   float3   ObjPos   ObjPos   x   1   ObjPos   y   2   ObjPos   z   3   ObjPos   Normalize   Print   ObjPos   выполнять   этот   скрипт   мы   увидеть   на   экран   значение   нормализовать   вектор   особенность   я   очень   порадовать   возможность   перегрузка   оператор   в   AngelScript   в   с   для   это   существовать   ключевой   слово   operator   и   символ   оператор   AngelScript   для   это   использовать   определенный   функция   вот   полный   список   соответствие   opNeg   opCom   opPreInc   opPreDec   opPostInc   opPostDec   opEquals   opEquals   opCmp   opCmp   opCmp   opCmp   opAssign   opAddAssign   opSubAssign   opMulAssign   opDivAssign   opAndAssign   opOrAssign   opXorAssign   opModAssign   opShlAssign   opShrAssign   opUShrAssign   opAdd   opAdd _ r   opSub   opSub _ r   opMul   opMul _ r   opDiv   opDiv _ r   opMod   opMod _ r   opAnd   opAnd _ r   opOr   opOr _ r   opXor   opXor _ r   opShl   opShl _ r   opShr   opShr _ r   opUShr   opUShr _ r   opIndex   допускать   мы   хотеть   сделать   возможность   чтобы   наш   вектор   поддерживать   прибавление   к   себя   другой   вектор   для   это   слегка   модифицировать   наш   класс   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   оставаться   только   зарегистрировать   новый   метод   g _ Engine   RegisterObjectMethod   float3   float3   opAddAssign   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   и   теперь   можно   спокойно   писать   так   float3   ObjPos   ObjPos   x   1   ObjPos   y   2   ObjPos   z   3   float3   ObjOffset   ObjOffset   x   3   ObjOffset   y   1   ObjOffset   z   5   ObjPos   ObjOffset   Print   ObjPos   и   мы   увидеть   на   экран   x   4   y   3   z   8   AngelScript   поддерживать   свойство   выглядеть   это   так   class   MyObj   type   get _ ValueName   type   set _ ValueName   type   Val   MyObj   a   type   tmp   a   ValueName   вызываться   get _ ValueName   a   ValueName   tmp   вызываться   set _ ValueName   также   свойство   поддерживаться   для   оператор   индекс   class   MyObj   float   get _ opIndex   int   idx   void   set _ opIndex   int   idx   float   value   MyObj   a   float   val   a   1   вызываться   get _ opIndex   a   2   val   вызываться   set _ opIndex   проблема   во   время   изучение   язык   AngelScript   появляться   несколько   проблема   решение   который   отнимать   у   я   довольно   много   время   вот   список   проблема   о   который   я   хотеть   бы   рассказывать   регистрация   перегружать   функция   регистрация   перегружать   метод   получение   адрес   на   переменный   объявлять   в   класс   регистрация   перегружать   функция   очень   часто   возникать   необходимость   объявлять   перегружать   функция   для   удобство   чтение   и   понимание   код   например   void   Print   string   val   cout   val   data   void   Print   int   val   cout   val   void   Print   float   val   cout   val   void   Print   float3   val   cout   x   val   x   y   val   y   z   val   z   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL   ошибка   так   как   компилятор   не   понимать   адрес   какой   из   четыре   функция   нужно   передавать   то   на   ум   приходить   два   решение   создавать   typedef   нужный   функция   и   осуществлять   приведение   тип   создавать   переменный   указатель   на   нужный   функция   и   передавать   он   вот   как   выглядеть   второй   решение   void   PrintS   string   val   Print   void   PrintI   int   val   Print   void   PritnF   float   val   Print   void   PrintF3   float3   val   Print   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   PrintS   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   int   val   asFUNCTION   PrintI   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   float   val   asFUNCTION   PritnF   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   регистрация   перегружать   метод   с   данный   проблема   вы   сталкиваться   если   захотеть   зарегистрировать   оператор   присваивание   давать   для   пример   модифицировать   наш   класс   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterObjectMethod   float3   float3   opAssign   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   ошибка   решение   который   подходить   для   функция   тут   не   подходить   для   решение   проблема   надо   внимательно   взглядывать   на   макрос   asMETHOD   он   выглядеть   так   define   asMETHOD   c   m   asSMethodPtr   Convert   void   c   c   m   соответственно   чтобы   мы   зарегистрировать   метод   нужно   конвертировать   он   тогда   наш   регистрация   быть   выглядеть   так   g _ Engine   RegisterObjectMethod   float3   float3   opAssign   float3  _ rval   asSMethodPtr   Convert   float3   float3   float3   float3   operator   asCALL _ THISCALL   получение   адрес   на   переменный   объявлять   в   класс   если   с   глобальный   переменный   дело   обстоять   предельно   просто   то   с   переменный   в   предел   класс   все   немного   сложный   стандартный   средство   не   позволять   получать   ID   переменная   по   ее   имя   или   объявление   поэтому   для   это   необходимо   проходиться   по   весь   переменный   в   класс   сам   и   сравнивать   имя   для   поиск   адрес   по   имя   переменная   мы   потребоваться   сам   имя   и   указатель   на   экземпляр   класс   скрипт   функция   быть   выглядеть   так   void   GetPropAddress   const   char   Name   asIScriptObject   ScriptObject   for   int   i   0   iGetPropertyCount   i   if   strcmp   ScriptObject   GetPropertyName   i   Name   return   ScriptObject   GetAddressOfProperty   i   return   0   вот   и   все   что   я   хотеться   бы   рассказывать   да   я   не   освещать   момент   касаться   JIT   и   шаблон   но   это   только   потому   что   еще   не   разбираться   с   это   по   мера   изучение   быть   обновлять   статья   Angel   Script   Example   полезный   ссылка   сайт   разработчик   http   www   angelcode   com   SVN   репозиторий   на   WIP   https   angelscript   svn   sourceforge   net   svnroot   angelscript   trunk   русский   мануал   http   13d   labs   com   angelscript _ manual   main   html   мануал   на   английский   http   www   angelcode   com   angelscript   sdk   docs   manual   index   html   JIT   компилятор   https   github   com   BlindMindStudios   AngelScript   JIT   Compiler   AngelScript   скрипт   2   ноябрь   2011   обновление   1   мара   2012   комментарий   169   убирать   реклама   контакт   сообщество   участник   каталог   сайт   категория   архив   новость   GameDev   ru   разработка   игра   2001   2019   AngelScript   общий   статья   программирование   игра   новость   статья   код   арт   дизайн   индустрия   подсказка   термин   FAQ   страница   сообщество   форум   качалка   участник   пользователь   темный   тема   публикация   проект   форум   работа   входить   программированиестатьиобщий   AngelScript   автор   константин   гиляровский   в   данный   статья   я   хотеться   бы   показывать   почему   я   понравиться   скриптовый   язык   AngelScript   когда   я   выбирать   язык   для   свой   движок   я   просматривать   множество   кандидатура   и   для   подробный   рассмотрение   выбирать   два   скриптовый   язык   они   быть   LUA   и   Python   введение   превивать   особенность   проблема   регистрация   перегружать   функция   регистрация   перегружать   метод   получение   адрес   на   переменный   объявлять   в   класс   полезный   ссылка   введение   в   процесс   рассмотрение   LUA   и   Python   я   выделять   для   себя   что   LUA   являться   достаточно   быстрый   но   с   немного   непривычный   синтаксис   Python   же   обладать   очень   простой   синтаксис   и   масса   полезный   библиотека   но   к   сожаление   он   оказываться   довольно   медленный   и   он   довольно   тяжело   привязывать   к   с   и   тут   на   работа   я   подсказывать   использовать   AngelScript   мол   он   удобный   для   связка   быстро   LUA   и   иметь   с   подобный   синтаксис   как   только   я   начинать   он   изучать   я   понимать   что   это   тот   самый   скриптовый   язык   мой   мечта   превивать   вот   что   можно   прочитывать   про   этот   язык   на   википедия   AngelScript   представлять   себя   движок   в   который   приложение   мочь   регистрировать   функция   свойство   и   тип   который   мочь   использоваться   в   скрипт   скрипт   компилироваться   в   модуль   количество   использовать   модуль   варьрироваться   в   зависимость   от   нужда   приложение   мочь   также   использовать   различный   интерфейс   для   каждый   модуль   с   помощь   группа   конфигурация   это   особенно   полезный   когда   приложение   работать   с   несколько   тип   скрипт   например   GUI   AI   и   т   д   программа   Hello   world   в   простой   случай   выглядеть   так   void   main   print   Hello   world   n   да   синтаксис   язык   радовать   с   самый   начало   язык   поддерживать   как   метод   функциональный   программирование   так   и   ооп   с   самый   начало   он   подкупать   свой   простота   регистрация   функция   переменный   тип   например   регистрация   глобальный   переменная   g _ Engine   RegisterGlobalProperty   int   SomeVal   SomeVal   где   SomeVal   это   переменный   тип   int   регистрация   глобальный   функция   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL   void   Print   string   val   cout   val   data   да   для   AngelScript   не   нужно   писать   функция   биндинг   что   являться   огроменный   плюс   в   сравнение   с   другой   язык   для   регистрация   свой   тип   приходиться   написать   парочка   функция   фабрика   для   создание   экземпляр   и   счетчик   ссылка   для   тип   тип   ссылка   и   вызов   конструктор   и   деструктор   для   объект   тип   тип   значение   например   у   мы   быть   класс   float3   который   мы   хотеть   бы   зарегистрировать   класс   счетчик   ссылка   class   RefC   private   int   refC   public   RefC   refC   1   void   AddRef   refC   void   Release   if   refC   delete   this   класс   который   мы   хотеть   зарегистрировать   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   фабрика   float3   Float3FactoryE   return   new   float3   функция   вывод   на   экран   void   PrintF3   float3   val   cout   x   val   x   y   val   y   z   val   z   для   это   мы   регистрировать   объект   как   тип   ссылка   и   указывать   он   фабрика   счетчик   ссылка   метод   и   функция   вывод   данные   на   экран   и   вот   как   это   выглядеть   g _ Engine   RegisterObjectType   float3   0   asOBJ _ REF   g _ Engine   RegisterObjectMethod   float3   void   Normalize   asMETHOD   float3   Normalize   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ FACTORY   float3   new _ float3   asFUNCTION   Float3FactoryE   asCALL _ CDECL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ ADDREF   void   AddRef   asMETHOD   float3   AddRef   asCALL _ THISCALL   g _ Engine   RegisterObjectBehaviour   float3   asBEHAVE _ RELEASE   void   Release   asMETHOD   float3   Release   asCALL _ THISCALL   g _ Engine   RegisterGlobalFunction   void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   мы   на   это   конечно   же   не   останавливаться   так   как   мы   нужный   доступ   к   значение   xyz   поэтому   они   мы   тоже   должный   зарегистрировать   что   мы   и   делать   написать   g _ Engine   RegisterObjectProperty   float3   float   x   offsetof   float3   x   g _ Engine   RegisterObjectProperty   float3   float   y   offsetof   float3   y   g _ Engine   RegisterObjectProperty   float3   float   z   offsetof   float3   z   все   предельно   простой   и   понятно   теперь   в   скрипт   можно   написать   float3   ObjPos   ObjPos   x   1   ObjPos   y   2   ObjPos   z   3   ObjPos   Normalize   Print   ObjPos   выполнять   этот   скрипт   мы   увидеть   на   экран   значение   нормализовать   вектор   особенность   я   очень   порадовать   возможность   перегрузка   оператор   в   AngelScript   в   с   для   это   существовать   ключевой   слово   operator   и   символ   оператор   AngelScript   для   это   использовать   определенный   функция   вот   полный   список   соответствие   opNeg   opCom   opPreInc   opPreDec   opPostInc   opPostDec   opEquals   opEquals   opCmp   opCmp   opCmp   opCmp   opAssign   opAddAssign   opSubAssign   opMulAssign   opDivAssign   opAndAssign   opOrAssign   opXorAssign   opModAssign   opShlAssign   opShrAssign   opUShrAssign   opAdd   opAdd _ r   opSub   opSub _ r   opMul   opMul _ r   opDiv   opDiv _ r   opMod   opMod _ r   opAnd   opAnd _ r   opOr   opOr _ r   opXor   opXor _ r   opShl   opShl _ r   opShr   opShr _ r   opUShr   opUShr _ r   opIndex   допускать   мы   хотеть   сделать   возможность   чтобы   наш   вектор   поддерживать   прибавление   к   себя   другой   вектор   для   это   слегка   модифицировать   наш   класс   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   оставаться   только   зарегистрировать   новый   метод   g _ Engine   RegisterObjectMethod   float3   float3   opAddAssign   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   и   теперь   можно   спокойно   писать   так   float3   ObjPos   ObjPos   x   1   ObjPos   y   2   ObjPos   z   3   float3   ObjOffset   ObjOffset   x   3   ObjOffset   y   1   ObjOffset   z   5   ObjPos   ObjOffset   Print   ObjPos   и   мы   увидеть   на   экран   x   4   y   3   z   8   AngelScript   поддерживать   свойство   выглядеть   это   так   class   MyObj   type   get _ ValueName   type   set _ ValueName   type   Val   MyObj   a   type   tmp   a   ValueName   вызываться   get _ ValueName   a   ValueName   tmp   вызываться   set _ ValueName   также   свойство   поддерживаться   для   оператор   индекс   class   MyObj   float   get _ opIndex   int   idx   void   set _ opIndex   int   idx   float   value   MyObj   a   float   val   a   1   вызываться   get _ opIndex   a   2   val   вызываться   set _ opIndex   проблема   во   время   изучение   язык   AngelScript   появляться   несколько   проблема   решение   который   отнимать   у   я   довольно   много   время   вот   список   проблема   о   который   я   хотеть   бы   рассказывать   регистрация   перегружать   функция   регистрация   перегружать   метод   получение   адрес   на   переменный   объявлять   в   класс   регистрация   перегружать   функция   очень   часто   возникать   необходимость   объявлять   перегружать   функция   для   удобство   чтение   и   понимание   код   например   void   Print   string   val   cout   val   data   void   Print   int   val   cout   val   void   Print   float   val   cout   val   void   Print   float3   val   cout   x   val   x   y   val   y   z   val   z   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   Print   asCALL _ CDECL   ошибка   так   как   компилятор   не   понимать   адрес   какой   из   четыре   функция   нужно   передавать   то   на   ум   приходить   два   решение   создавать   typedef   нужный   функция   и   осуществлять   приведение   тип   создавать   переменный   указатель   на   нужный   функция   и   передавать   он   вот   как   выглядеть   второй   решение   void   PrintS   string   val   Print   void   PrintI   int   val   Print   void   PritnF   float   val   Print   void   PrintF3   float3   val   Print   g _ Engine   RegisterGlobalFunction   void   Print   string   val   asFUNCTION   PrintS   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   int   val   asFUNCTION   PrintI   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   float   val   asFUNCTION   PritnF   asCALL _ CDECL   g _ Engine   RegisterGlobalFunction   void   Print   float3   val   asFUNCTION   PrintF3   asCALL _ CDECL   регистрация   перегружать   метод   с   данный   проблема   вы   сталкиваться   если   захотеть   зарегистрировать   оператор   присваивание   давать   для   пример   модифицировать   наш   класс   class   float3   public   RefC   public   float   x   float   y   float   z   float3   x   y   z   0   void   Normalize   float   Len   sqrt   x   x   y   y   z   z   Len   Len   Len   1   x   Len   y   Len   z   Len   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   float3   operator   float3  _ rval   x  _ rval   x   y  _ rval   y   z  _ rval   z   this   AddRef   return   this   обычный   регистрация   вызывать   ошибка   g _ Engine   RegisterObjectMethod   float3   float3   opAssign   float3  _ rval   asMETHOD   float3   operator   asCALL _ THISCALL   ошибка   решение   который   подходить   для   функция   тут   не   подходить   для   решение   проблема   надо   внимательно   взглядывать   на   макрос   asMETHOD   он   выглядеть   так   define   asMETHOD   c   m   asSMethodPtr   Convert   void   c   c   m   соответственно   чтобы   мы   зарегистрировать   метод   нужно   конвертировать   он   тогда   наш   регистрация   быть   выглядеть   так   g _ Engine   RegisterObjectMethod   float3   float3   opAssign   float3  _ rval   asSMethodPtr   Convert   float3   float3   float3   float3   operator   asCALL _ THISCALL   получение   адрес   на   переменный   объявлять   в   класс   если   с   глобальный   переменный   дело   обстоять   предельно   просто   то   с   переменный   в   предел   класс   все   немного   сложный   стандартный   средство   не   позволять   получать   ID   переменная   по   ее   имя   или   объявление   поэтому   для   это   необходимо   проходиться   по   весь   переменный   в   класс   сам   и   сравнивать   имя   для   поиск   адрес   по   имя   переменная   мы   потребоваться   сам   имя   и   указатель   на   экземпляр   класс   скрипт   функция   быть   выглядеть   так   void   GetPropAddress   const   char   Name   asIScriptObject   ScriptObject   for   int   i   0   iGetPropertyCount   i   if   strcmp   ScriptObject   GetPropertyName   i   Name   return   ScriptObject   GetAddressOfProperty   i   return   0   вот   и   все   что   я   хотеться   бы   рассказывать   да   я   не   освещать   момент   касаться   JIT   и   шаблон   но   это   только   потому   что   еще   не   разбираться   с   это   по   мера   изучение   быть   обновлять   статья   Angel   Script   Example   полезный   ссылка   сайт   разработчик   http   www   angelcode   com   SVN   репозиторий   на   WIP   https   angelscript   svn   sourceforge   net   svnroot   angelscript   trunk   русский   мануал   http   13d   labs   com   angelscript _ manual   main   html   мануал   на   английский   http   www   angelcode   com   angelscript   sdk   docs   manual   index   html   JIT   компилятор   https   github   com   BlindMindStudios   AngelScript   JIT   Compiler   AngelScript   скрипт   2   ноябрь   2011   обновление   1   мара   2012   комментарий   169   убирать   реклама   контакт   сообщество   участник   каталог   сайт   категория   архив   новость   GameDev   ru   разработка   игра   2001   2019

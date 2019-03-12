@@ -1,0 +1,591 @@
+   Coverage   Buffer   из   CryENGINE   в   деталь   график   статья   программирование  
+ игра   новость   статья   код   арт   дизайн   индустрия   подсказка   термин   FAQ 
+
+   страница   сообщество   форум   качалка   участник   пользователь   темный   тема   публикация   проект
+   форум   работа   входить   программированиестатьиграфика   Coverage   Buffer   из   CryENGINE   в   деталь
+ 
+   автор   Mephisto   std   некоторый   время   назад   я   наткнуться   в  
+ замечательный   презентация   Secrets   of   CryEGNINE   3   Graphics   Technology   от   не  
+ менее 
+   замечательный   Nickolay   Kasyan   Nicolas   Schulz   и   Tiago   Sousa   на
+   описание   любопытный   технология   называть   автор   Coverage   Buffer   с   сам   презентация
+   можно 
+   ознакомляться   тут   http   www   slideshare   net   TiagoAlexSousa   secrets  
+ of   cryengine   3   g   cs   technology   технология   представлять   как   основной  
+ метод   окклюдить 
+   куллинг   активно   использовать   начинать   с   Crysis   2   так
+   как   никакой   внятный   пейпер   по   данный   технология   Crytek   не   предоставлять
+   а   разбираться 
+   быть   интересный   то   приходиться   плясать   с   то  
+ что   иметь   что   итак   идея   по   слово   автор   презентация   заключаться  
+ в   следующий   получать 
+   depth   buffer   предыдущий   кадр   сделать   репроекция   в
+   текущий   кадр   софтварный   растеризовать   BBox   ы   объект   проверять   видный   ли
+   они   камера   и 
+   рисовать   не   рисовать   метод   в   принцип  
+ не   содержать   никакой   революционный   идея   отличие   от   основной   конкурент   Software  
+ Occlusion   Culling   заключаться   в 
+   тот   в   тот   метод   мы   необходимо
+   строго   поделить   объект   на   категория   Occluder   Occludee   что   не   всегда
+   возможно   сделать   итак   еще 
+   раз   кратко   резюмировать   каков   плюс  
+ этот   метод   не   нужно   разделять   объект   на   occluder   occludee   использование  
+ уже   готовый   depth   buffer   ну 
+   и   очевидный   минус   ошибка   связывать
+   с   отставание   на   1   кадр   репроекция   полностью   не   решать   данный
+   проблема   оверхед   при   полный   видимость 
+   объект   связывать   с   манипуляция  
+ с   depth   buffer   downscale   lock   и   т   д   где   так  
+ уж   получаться   что   я   гуглить   в 
+   сторона   Occlusion   Culling   не
+   просто   так   на   проект   необходимо   быть   решать   довольно   важный   задача
+   связывать   с   тормоз   возникать   из   за 
+   огромный   лесной   массив  
+ речь   идти   конечно   же   о   горячо   любимый   я   Life   is  
+ Feudal   весь   скрин   ниже   быть   оттуда   итак 
+   вкратце   суть   изначальный
+   проблема   быть   остров   густо   засаживать   дерево   рисоваться   весь   этот   действо
+   на   движок   Torque3D   из   оптимизация   изначально   встроенный 
+   в   движок  
+ быть   неплохой   система   батчинга   биллборд   для   дальний   дерево   и   инстансинг  
+ для   тот   который   близко   однако   решение   рисовать   не 
+   рисовать   приниматься
+   по   дефолт   исключительно   в   результат   frustum   culling   а   т   е
+   мы   смотреть   попадать   ли   данный   дерево   батч   в 
+   пирамида  
+ и   если   попадать   то   рисовать   однако   такой   подход   не   вполне  
+ оправдывать   себя   в   случай   действительно   большой   лесной   массив   с 
+   десяток
+   тысяча   дерево   в   этот   случай   попадать   во   фрустум   и   как
+   следствие   рисоваться   тот   дерево   который   находиться   за   стена   гора 
+  
+ и   другой   дерево   из   за   это   бюджет   кадр   терпеть   катастрофический  
+ потеря   даже   смотреть   сквозь   стена   в   направление   центр   остров   рисование 
+
+   невидимый   батч   и   дерево   занимать   порядко   20   30мс   что   в
+   общий   то   вплотную   приближаться   к   рассчетный   бюджет   кадр   33мс   как
+ 
+   результат   игрок   получать   драматический   падение   фпс   просто   глядеть   в  
+ направление   центр   остров   для   решение   данный   задача   быть   решать   воспользоваться  
+ технология 
+   Coverage   Buffer   если   бы   я   писать   например   диплом   то
+   тут   бы   стоить   сделать   обзор   весь   остальной   метод   OC   обозначать
+   плюс 
+   и   минус   и   обосновывать   почему   быть   выбирать   именно  
+ этот   к   счастие   это   не   диплом   потому   ограничиваться   один   предложение  
+ после   чтение 
+   многочисленный   пейпер   и   статья   переписка   и   беседа   с
+   более   мудрый   и   опытный   коллега   быть   решать   опробовать   этот   метод
+   то   более 
+   что   в   бой   он   уже   себя   показывать  
+ оставаться   лишь   посмотреть   как   он   показывать   себя   в   наш   ситуация  
+ когда   как   теперь 
+   переходить   к   технический   деталь   и   собственно   код
+   первый   задача   который   вставать   это   получать   depth   buffer   Torque3D   который
+   на   момент   написание 
+   статья   поддерживать   DirectX   только   9й   версия  
+ накладывать   в   этот   свет   определенный   ограничение   как   получать   Depth   Buffer  
+ в   DirectX   9   ответ 
+   находиться   на   сайт   арас   пранцкевичус   я
+   не   уверенный   что   правильно   транслитерировать   его   фамилия   это   главный   render
+   guy   известный   движок   Unity 
+   http   aras   p   info   texts  
+ D3D9GPUHacks   html   оказываться   что   depth   buffer   получать   в   directX   9  
+ весь   таки   можно   но   для 
+   это   нужно   использовать   специальный   формат
+   INTZ   согласно   официальный   документация   от   AMD   и   NVidia   весь   видеокарта
+   выпускать   начинать   с   2008го   год 
+   поддерживать   данный   формат   для  
+ более   ранний   быть   RAWZ   так   что   можно   без   особый   опасение  
+ пользоваться   данный   хак   ссылка   на   документация 
+   AMD   и   NVidia   код
+   использование   тривиальный   взять   из   один   из   пейпер   вверху   приводить   его
+   тут   чтобы   так   сказать   весь   яйцо 
+   быть   в   один  
+ корзина   INTZ   скрывать   define   FOURCC _ INTZ   D3DFORMAT   MAKEFOURCC   I   N  
+ T   Z   Determine   if   INTZ   is   supported   HRESULT 
+   hr   hr
+   pd3d   CheckDeviceFormat   AdapterOrdinal   DeviceType   AdapterFormat   D3DUSAGE _ DEPTHSTENCIL   D3DRTYPE _ TEXTURE   FOURCC
+ _ INTZ   BOOL   bINTZDepthStencilTexturesSupported   hr   D3D _ OK   Create   an   INTZ   depth
+   stencil   texture 
+   IDirect3DTexture9   pINTZDST   pd3dDevice   CreateTexture   dwWidth   dwHeight   1  
+ D3DUSAGE _ DEPTHSTENCIL   FOURCC _ INTZ   D3DPOOL _ DEFAULT   pINTZDST   NULL   Retrieve   depth  
+ buffer   surface   from   texture   interface   IDirect3DSurface9 
+   pINTZDSTSurface   pINTZDST   GetSurfaceLevel   0
+   pINTZDSTSurface   Bind   depth   buffer   pd3dDevice   SetDepthStencilSurface   pINTZDSTSurface   Bind   depth   buffer
+   texture   pd3dDevice   SetTexture   0   pINTZDST   дальнейший 
+   подготовка   Depth   buffer  
+ а   downscale   до   низкий   разрешение   быть   выбирать   256х128   lock   memcpy  
+ reprojection   все   тут   достаточно   тривиальный   downscale   делаться 
+   с   маска   max
+   браться   максимальный   расстояние   близко   к   камера   дабы   не   закрывать   что
+   лишний   репроекция   делаться   путем   применение   обратный   матрица 
+   от   предыдущий  
+ кадр   и   новый   от   текущий   возникать   пробел   замазываться   maxValue   дабы  
+ не   закрывать   чего   лишний   итак   теперь   быть   depth 
+   buffer   теперь
+   дело   за   малое   софтварной   растеризация   ббокс   софтварной   растеризация   давать   тема
+   никак   нельзя   называть   нехоженный   тропа   уже   довольно   много 
+   мусолить  
+ на   разный   лад   однако   внятный   инструкция   к   реализация   находить   не  
+ так   то   просто   самый   полезный   материал   который   я   находить 
+   по
+   сабж   быть   тут   https   software   intel   com   en   us   blogs
+   2013   09   06   software   occlus   ling   update   2   это 
+  
+ крайне   полезный   интеловский   демка   по   conventional   occlusion   culling   который   все  
+ рекомендовать   внутри   много   полезный   первый   версия   функция   для   софтварный   растеризация 
+
+   быть   реализовать   в   так   сказать   plain   c   она   работать   но
+   довольно   медленно   спасибо   комрад   bazhenovc   подсказывать   переписывать   на   SSE   я
+ 
+   по   молодость   с   SSE   еще   не   работать   но   с  
+ божий   и   интеловский   помощь   переписывать   на   SSE   становиться   работать   в  
+ 2 
+   2   5   раз   быстро   вот   она   магия   SIMD   делиться
+   код   безвозмездно   юзать   на   здоровье   если   вдруг   кто   замечать   какой
+   недочет 
+   или   возможность   для   оптимизация   очень   просить   сообщать   код  
+ скрывать   static   const   int   sBBIndexList   36   index   for   top   4  
+ 8   7 
+   4   7   3   index   for   bottom   5   1
+   2   5   2   6   index   for   left   5   8   4
+   5   4 
+   1   index   for   right   2   3   7  
+ 2   7   6   index   for   back   6   7   8   6  
+ 8   5   index 
+   for   front   1   4   3   1   3
+   2  __ m128   SSETransformCoords  __ m128   v  __ m128   m  __ m128   vResult  _ mm
+ _ shuffle _ ps   v   v  _ MM _ SHUFFLE 
+   0   0   0  
+ 0   vResult  _ mm _ mul _ ps   vResult   m   0  __ m128   vTemp  _
+ mm _ shuffle _ ps   v   v  _ MM _ SHUFFLE   1   1   1  
+ 1   vTemp 
+  _ mm _ mul _ ps   vTemp   m   1   vResult  _ mm
+ _ add _ ps   vResult   vTemp   vTemp  _ mm _ shuffle _ ps   v   v
+  _ MM _ SHUFFLE   2   2   2   2   vTemp  _ mm _ mul _ ps
+   vTemp 
+   m   2   vResult  _ mm _ add _ ps   vResult   vTemp  
+ vResult  _ mm _ add _ ps   vResult   m   3   return   vResult  __ forceinline  __
+ m128i   Min   const  __ m128i   v0   const 
+  __ m128i   v1  __ m128i   tmp
+   tmp  _ mm _ min _ epi32   v0   v1   return   tmp  __ forceinline  __ m128i
+   Max   const  __ m128i   v0   const  __ m128i   v1  __ m128i 
+   tmp  
+ tmp  _ mm _ max _ epi32   v0   v1   return   tmp   struct   SSEVFloat4  __
+ m128   X  __ m128   Y  __ m128   Z  __ m128   W   get   4  
+ triangles 
+   from   vertices   void   SSEGather   SSEVFloat4   pOut   3   int   triId
+   const  __ m128   xformedPos   for   int   i   0   i   3   i
+   int 
+   ind0   sBBIndexList   triId   3   i   0   1   int  
+ ind1   sBBIndexList   triId   3   i   3   1   int   ind2   sBBIndexList  
+ triId   3 
+   i   6   1   int   ind3   sBBIndexList   triId   3
+   i   9   1  __ m128   v0   xformedPos   ind0  __ m128   v1   xformedPos
+   ind1  __ m128 
+   v2   xformedPos   ind2  __ m128   v3   xformedPos   ind3  _
+ MM _ TRANSPOSE4 _ PS   v0   v1   v2   v3   pOut   i   X  
+ v0   pOut   i   Y   v1 
+   pOut   i   Z   v2   pOut
+   i   W   v3   now   X   contains   X0   x1   x2   x3
+   Y   Y0   Y1   Y2   Y3 
+   and   so   on   bool  
+ RasterizeTestBBoxSSE   Box3F   box  __ m128   matrix   float   buffer   Point4I   res   verts  
+ and   flags  __ m128   verticesSSE   8   int 
+   flags   8   static   Point4F
+   vertices   8   static   Point4F   xformedPos   3   static   int   flagsLoc   3
+   Set   DAZ   and   FZ   MXCSR   bits 
+   to   flush   denormals  
+ to   zero   i   e   make   it   faster   Denormal   are   zero  
+ DAZ   is   bit   6   and   Flush   to 
+   zero   FZ   is
+   bit   15   so   to   enable   the   two   to   have   to
+   set   bits   6   and   15   which   1000 
+   0000   0100  
+ 0000   0x8040  _ mm _ setcsr  _ mm _ getcsr   0x8040   init   vertices   Point3F  
+ center   box   getCenter   Point3F   extent   box   getExtents   Point4F   vCenter   Point4F 
+
+   center   x   center   y   center   z   1   0   Point4F   vHalf
+   Point4F   extent   x   0   5   extent   y   0   5   extent
+ 
+   z   0   5   1   0   Point4F   vMin   vCenter   vHalf  
+ Point4F   vMax   vCenter   vHalf   fill   vertices   vertices   0   Point4F   vMin  
+ x 
+   vMin   y   vMin   z   1   vertices   1   Point4F   vMax
+   x   vMin   y   vMin   z   1   vertices   2   Point4F   vMax
+   x 
+   vMax   y   vMin   z   1   vertices   3   Point4F  
+ vMin   x   vMax   y   vMin   z   1   vertices   4   Point4F  
+ vMin   x 
+   vMin   y   vMax   z   1   vertices   5   Point4F
+   vMax   x   vMin   y   vMax   z   1   vertices   6   Point4F
+   vMax   x 
+   vMax   y   vMax   z   1   vertices   7  
+ Point4F   vMin   x   vMax   y   vMax   z   1   transforms   for  
+ int   i   0 
+   i   8   i   verticesSSE   i  _ mm _ loadu
+ _ ps   vertices   i   verticesSSE   i   SSETransformCoords   verticesSSE   i   matrix  __ m128
+   vertX  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE 
+   i  _ MM _
+ SHUFFLE   0   0   0   0   xxxx  __ m128   vertY  _ mm _ shuffle _
+ ps   verticesSSE   i   verticesSSE   i  _ MM _ SHUFFLE   1   1   1  
+ 1   yyyy 
+  __ m128   vertZ  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE
+   i  _ MM _ SHUFFLE   2   2   2   2   zzzz  __ m128   vertW
+  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE   i 
+  _ MM _ SHUFFLE  
+ 3   3   3   3   wwww   static   const  __ m128   sign _ mask  _
+ mm _ set1 _ ps   0   f   0   f   1   31   vertW  _
+ mm _ andnot _ ps   sign _ mask 
+   vertW   abs   vertW  _ mm _ shuffle
+ _ ps   vertW  _ mm _ set1 _ ps   1   0f  _ MM _ SHUFFLE   0
+   0   0   0   w   w   1   1   vertW  _ mm _ shuffle
+ _ ps   vertW 
+   vertW  _ MM _ SHUFFLE   3   0   0   0  
+ w   w   w   1   project   verticesSSE   i  _ mm _ div _ ps  
+ verticesSSE   i   vertW   now   vertices   are 
+   between   1   and   1
+   const  __ m128   sadd  _ mm _ setr _ ps   res   x   0   5
+   res   y   0   5   0   0   const  __ m128 
+   smult  _
+ mm _ setr _ ps   res   x   0   5   res   y   0  
+ 5   1   1   verticesSSE   i  _ mm _ add _ ps   sadd  _ mm _
+ mul _ ps   verticesSSE   i   smult 
+   Rasterize   the   AABB   triangles   4
+   at   a   time   for   int   i   0   i   12   i
+   4   SSEVFloat4   xformedPos   3   SSEGather 
+   xformedPos   i   verticesSSE   by  
+ 3   vertices   fxPtX   0   X0   X1   X2   X3   of   1st  
+ vert   in   4   triangles   fxPtX   1 
+   X0   X1   X2   X3
+   of   2nd   vert   in   4   triangles   and   so   on  __ m128i
+   fxPtX   3   fxPtY   3   for   int 
+   m   0   m  
+ 3   m   fxPtX   m  _ mm _ cvtps _ epi32   xformedPos   m   X  
+ fxPtY   m  _ mm _ cvtps _ epi32   xformedPos   m   Y   Fab   x  
+ y 
+   Ax   By   C   0   Fab   x   y   ya   yb
+   x   xb   xa   y   xa   yb   xb   ya   0   Compute
+   A 
+   ya   yb   for   the   3   line   segments   that  
+ make   up   each   triangle  __ m128i   A0  _ mm _ sub _ epi32   fxPtY  
+ 1   fxPtY   2  __ m128i 
+   A1  _ mm _ sub _ epi32   fxPtY   2
+   fxPtY   0  __ m128i   A2  _ mm _ sub _ epi32   fxPtY   0   fxPtY
+   1   Compute   B   xb   xa   for   the   3 
+   line  
+ segments   that   make   up   each   triangle  __ m128i   B0  _ mm _ sub _
+ epi32   fxPtX   2   fxPtX   1  __ m128i   B1  _ mm _ sub _ epi32  
+ fxPtX   0   fxPtX 
+   2  __ m128i   B2  _ mm _ sub _ epi32   fxPtX
+   1   fxPtX   0   Compute   C   xa   yb   xb   ya   for
+   the   3   line   segments   that 
+   make   up   each   triangle  __
+ m128i   C0  _ mm _ sub _ epi32  _ mm _ mullo _ epi32   fxPtX   1  
+ fxPtY   2  _ mm _ mullo _ epi32   fxPtX   2   fxPtY   1  __ m128i  
+ C1  _ mm _ sub _ epi32 
+  _ mm _ mullo _ epi32   fxPtX   2   fxPtY
+   0  _ mm _ mullo _ epi32   fxPtX   0   fxPtY   2  __ m128i   C2
+  _ mm _ sub _ epi32  _ mm _ mullo _ epi32   fxPtX   0   fxPtY   1
+  _ mm _ mullo _ epi32   fxPtX 
+   1   fxPtY   0   Compute   triangle  
+ area  __ m128i   triArea  _ mm _ mullo _ epi32   B2   A1   triArea  _ mm _
+ sub _ epi32   triArea  _ mm _ mullo _ epi32   B1   A2  __ m128   oneOverTriArea  _
+ mm _ div _ ps 
+  _ mm _ set1 _ ps   1   0f  _ mm _ cvtepi32
+ _ ps   triArea  __ m128   Z   3   Z   0   xformedPos   0   W
+   Z   1  _ mm _ mul _ ps  _ mm _ sub _ ps   xformedPos   1
+   W 
+   Z   0   oneOverTriArea   Z   2  _ mm _ mul _ ps  _
+ mm _ sub _ ps   xformedPos   2   W   Z   0   oneOverTriArea   Use  
+ bounding   box   traversal   strategy   to   determine 
+   which   pixels   to   rasterize
+  __ m128i   startX  _ mm _ and _ si128   Max   Min   Min   fxPtX   0
+   fxPtX   1   fxPtX   2  _ mm _ set1 _ epi32   0  _ mm _ set1
+ _ epi32   1 
+  __ m128i   endX   Min   Max   Max   fxPtX   0  
+ fxPtX   1   fxPtX   2  _ mm _ set1 _ epi32   res   x   1  __
+ m128i   startY  _ mm _ and _ si128   Max   Min 
+   Min   fxPtY   0
+   fxPtY   1   fxPtY   2  _ mm _ set1 _ epi32   0  _ mm _ set1
+ _ epi32   1  __ m128i   endY   Min   Max   Max   fxPtY   0   fxPtY
+   1 
+   fxPtY   2  _ mm _ set1 _ epi32   res   y   1  
+ Now   we   have   4   triangles   set   up   Rasterize   them   each  
+ individually   for   int   lane 
+   0   lane   4   lane   Skip   triangle
+   if   area   is   zero   if   triArea   m128i _ i32   lane   0
+   continue   Extract   this   triangle   s 
+   properties   from   the   SIMD  
+ versions  __ m128   zz   3   for   int   vv   0   vv   3  
+ vv   zz   vv  _ mm _ set1 _ ps   Z   vv 
+   m128 _ f32
+   lane   drop   culled   triangle   int   startXx   startX   m128i _ i32   lane
+   int   endXx   endX   m128i _ i32   lane   int   startYy   startY   m128i
+ _ i32   lane 
+   int   endYy   endY   m128i _ i32   lane  __ m128i  
+ aa0  _ mm _ set1 _ epi32   A0   m128i _ i32   lane  __ m128i   aa1  _
+ mm _ set1 _ epi32   A1   m128i _ i32   lane  __ m128i   aa2  _ mm _
+ set1 _ epi32 
+   A2   m128i _ i32   lane  __ m128i   bb0  _ mm _ set1
+ _ epi32   B0   m128i _ i32   lane  __ m128i   bb1  _ mm _ set1 _ epi32
+   B1   m128i _ i32   lane  __ m128i   bb2  _ mm _ set1 _ epi32   B2
+   m128i _ i32 
+   lane  __ m128i   cc0  _ mm _ set1 _ epi32   C0  
+ m128i _ i32   lane  __ m128i   cc1  _ mm _ set1 _ epi32   C1   m128i _
+ i32   lane  __ m128i   cc2  _ mm _ set1 _ epi32   C2   m128i _ i32  
+ lane  __ m128i 
+   aa0Inc  _ mm _ mul _ epi32   aa0  _ mm _ setr _ epi32
+   1   2   3   4  __ m128i   aa1Inc  _ mm _ mul _ epi32   aa1
+  _ mm _ setr _ epi32   1   2   3   4  __ m128i   aa2Inc  _ mm
+ _ mul _ epi32 
+   aa2  _ mm _ setr _ epi32   1   2   3  
+ 4  __ m128i   alpha0  _ mm _ add _ epi32  _ mm _ mul _ epi32   aa0  _
+ mm _ set1 _ epi32   startXx  _ mm _ mul _ epi32   bb0  _ mm _ set1 _
+ epi32   startYy   alpha0  _ mm _ add _ epi32   cc0 
+   alpha0  __ m128i   beta0
+  _ mm _ add _ epi32  _ mm _ mul _ epi32   aa1  _ mm _ set1 _ epi32
+   startXx  _ mm _ mul _ epi32   bb1  _ mm _ set1 _ epi32   startYy   beta0
+  _ mm _ add _ epi32   cc1   beta0  __ m128i   gama0  _ mm _ add _ epi32
+  _ mm _ mul _ epi32 
+   aa2  _ mm _ set1 _ epi32   startXx  _ mm _
+ mul _ epi32   bb2  _ mm _ set1 _ epi32   startYy   gama0  _ mm _ add _
+ epi32   cc2   gama0   int   rowIdx   startYy   res   x   startXx  __ m128  
+ zx  _ mm _ mul _ ps 
+  _ mm _ cvtepi32 _ ps   aa1   zz   1
+   zx  _ mm _ add _ ps   zx  _ mm _ mul _ ps  _ mm _ cvtepi32
+ _ ps   aa2   zz   2   zx  _ mm _ mul _ ps   zx  _ mm
+ _ setr _ ps   1   f   2   f 
+   3   f   4  
+ f   Texels   traverse   for   int   r   startYy   r   endYy   r  
+ rowIdx   res   x   alpha0  _ mm _ add _ epi32   alpha0   bb0 
+   beta0
+  _ mm _ add _ epi32   beta0   bb1   gama0  _ mm _ add _ epi32   gama0
+   bb2   Compute   barycentric   coordinates   Z0   as   an   origin   int   index
+   rowIdx  __ m128i   alpha 
+   alpha0  __ m128i   beta   beta0  __ m128i   gama  
+ gama0   Compute   barycentric   interpolated   depth  __ m128   depth   zz   0   depth  _
+ mm _ add _ ps   depth  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps 
+
+   beta   zz   1   depth  _ mm _ add _ ps   depth  _ mm _ mul
+ _ ps  _ mm _ cvtepi32 _ ps   gama   zz   2  __ m128i   anyOut  _ mm
+ _ setzero _ si128  __ m128i   mask  __ m128   previousDepth  __ m128   depthMask 
+  __ m128i  
+ finalMask   for   int   c   startXx   c   endXx   c   4   index  
+ 4   alpha  _ mm _ add _ epi32   alpha   aa0Inc   beta  _ mm _ add _
+ epi32   beta   aa1Inc 
+   gama  _ mm _ add _ epi32   gama   aa2Inc   depth
+  _ mm _ add _ ps   depth   zx   mask  _ mm _ or _ si128  _ mm
+ _ or _ si128   alpha   beta   gama   previousDepth  _ mm _ loadu _ ps   buffer
+   index   calculate   current 
+   depth   log   depth   6   907755375   0  
+ 048254941  __ m128   curdepth  _ mm _ mul _ ps  _ mm _ sub _ ps   log _
+ ps   depth  _ mm _ set1 _ ps   6   907755375  _ mm _ set1 _ ps  
+ 0   048254941   curdepth 
+  _ mm _ sub _ ps   curdepth  _ mm _ set1 _ ps
+   0   05   depthMask  _ mm _ cmplt _ ps   curdepth   previousDepth   finalMask  _ mm
+ _ andnot _ si128   mask  _ mm _ castps _ si128   depthMask   anyOut  _ mm _ or
+ _ si128   anyOut   finalMask   for   each 
+   column   if  _ mm _ testz _
+ si128   anyOut  _ mm _ set1 _ epi32   0x80000000   stop   timer   QueryPerformanceCounter   t2  
+ compute   and   print   the   elapsed   time   in   millisec   elapsedTime   t2 
+
+   QuadPart   t1   QuadPart   1000   0   frequency   QuadPart   RasterizationStats   RasterizeSSETimeSpent   elapsedTime
+   return   true   early   exit   for   each   row   for   each   triangle
+ 
+   for   each   set   of   SIMD   triangles   return   false   собственно  
+ все   технология   Coverage   Buffer   в   общий   черта   готовый   в   процесс  
+ имплементация 
+   правда   вскрываться   еще   ряд   другой   сложность   и   баг   связывать
+   с   рендер   лес   на   борьба   с   который   уходить   в   20
+   раз 
+   много   время   чем   на   сам   C   Buffer   но  
+ борьба   с   они   не   входить   в   тема   данный   пост   результат  
+ использование   технология 
+   C   Buffer   для   интеллектуальный   OC   для   рендеринг   лес
+   позволять   уменьшать   время   рендер   кадр   на   открытый   пространство   от   5
+   до   20мс 
+   а   в   закрывать   до   30мс   в   случай  
+ когда   отсекаться   весь   растительность   однако   давать   оверхед   в   1   5  
+ 2мс   при   неэффективный 
+   отсечение   т   е   технология   использовать   но   ничто
+   не   отсечься   резальт   можно   быть   наблюдать   в   проект   после   внимательный
+   тестирование   в   то 
+   число   и   на   совместимость   с   архаичный  
+ машина   думать   через   пара   неделя   coverage   buffer   CryEngine   occlusion   culling  
+ 21   октябрь   2015   обновление 
+   31   дека   2018   комментарий   23   убирать
+   реклама   контакт   сообщество   участник   каталог   сайт   категория   архив   новость   GameDev
+   ru   разработка   игра   2001 
+   2019 
+ Coverage Buffer из CryENGINE в деталь график статья программирование игра новость статья код арт дизайн индустрия подсказка термин FAQ
+ страница сообщество форум качалка участник пользователь темный тема публикация проект форум работа входить программированиестатьиграфика Coverage Buffer из CryENGINE в деталь
+ автор Mephisto std некоторый время назад я наткнуться в замечательный презентация Secrets of CryEGNINE 3 Graphics Technology от не менее
+ замечательный Nickolay Kasyan Nicolas Schulz и Tiago Sousa на описание любопытный технология называть автор Coverage Buffer с сам презентация можно
+ ознакомляться тут http www slideshare net TiagoAlexSousa secrets of cryengine 3 g cs technology технология представлять как основной метод окклюдить
+ куллинг активно использовать начинать с Crysis 2 так как никакой внятный пейпер по данный технология Crytek не предоставлять а разбираться
+ быть интересный то приходиться плясать с то что иметь что итак идея по слово автор презентация заключаться в следующий получать
+ depth buffer предыдущий кадр сделать репроекция в текущий кадр софтварный растеризовать BBox ы объект проверять видный ли они камера и
+ рисовать не рисовать метод в принцип не содержать никакой революционный идея отличие от основной конкурент Software Occlusion Culling заключаться в
+ тот в тот метод мы необходимо строго поделить объект на категория Occluder Occludee что не всегда возможно сделать итак еще
+ раз кратко резюмировать каков плюс этот метод не нужно разделять объект на occluder occludee использование уже готовый depth buffer ну
+ и очевидный минус ошибка связывать с отставание на 1 кадр репроекция полностью не решать данный проблема оверхед при полный видимость
+ объект связывать с манипуляция с depth buffer downscale lock и т д где так уж получаться что я гуглить в
+ сторона Occlusion Culling не просто так на проект необходимо быть решать довольно важный задача связывать с тормоз возникать из за
+ огромный лесной массив речь идти конечно же о горячо любимый я Life is Feudal весь скрин ниже быть оттуда итак
+ вкратце суть изначальный проблема быть остров густо засаживать дерево рисоваться весь этот действо на движок Torque3D из оптимизация изначально встроенный
+ в движок быть неплохой система батчинга биллборд для дальний дерево и инстансинг для тот который близко однако решение рисовать не
+ рисовать приниматься по дефолт исключительно в результат frustum culling а т е мы смотреть попадать ли данный дерево батч в
+ пирамида и если попадать то рисовать однако такой подход не вполне оправдывать себя в случай действительно большой лесной массив с
+ десяток тысяча дерево в этот случай попадать во фрустум и как следствие рисоваться тот дерево который находиться за стена гора
+ и другой дерево из за это бюджет кадр терпеть катастрофический потеря даже смотреть сквозь стена в направление центр остров рисование
+ невидимый батч и дерево занимать порядко 20 30мс что в общий то вплотную приближаться к рассчетный бюджет кадр 33мс как
+ результат игрок получать драматический падение фпс просто глядеть в направление центр остров для решение данный задача быть решать воспользоваться технология
+ Coverage Buffer если бы я писать например диплом то тут бы стоить сделать обзор весь остальной метод OC обозначать плюс
+ и минус и обосновывать почему быть выбирать именно этот к счастие это не диплом потому ограничиваться один предложение после чтение
+ многочисленный пейпер и статья переписка и беседа с более мудрый и опытный коллега быть решать опробовать этот метод то более
+ что в бой он уже себя показывать оставаться лишь посмотреть как он показывать себя в наш ситуация когда как теперь
+ переходить к технический деталь и собственно код первый задача который вставать это получать depth buffer Torque3D который на момент написание
+ статья поддерживать DirectX только 9й версия накладывать в этот свет определенный ограничение как получать Depth Buffer в DirectX 9 ответ
+ находиться на сайт арас пранцкевичус я не уверенный что правильно транслитерировать его фамилия это главный render guy известный движок Unity
+ http aras p info texts D3D9GPUHacks html оказываться что depth buffer получать в directX 9 весь таки можно но для
+ это нужно использовать специальный формат INTZ согласно официальный документация от AMD и NVidia весь видеокарта выпускать начинать с 2008го год
+ поддерживать данный формат для более ранний быть RAWZ так что можно без особый опасение пользоваться данный хак ссылка на документация
+ AMD и NVidia код использование тривиальный взять из один из пейпер вверху приводить его тут чтобы так сказать весь яйцо
+ быть в один корзина INTZ скрывать define FOURCC _ INTZ D3DFORMAT MAKEFOURCC I N T Z Determine if INTZ is
+ supported HRESULT hr hr pd3d CheckDeviceFormat AdapterOrdinal DeviceType AdapterFormat D3DUSAGE _ DEPTHSTENCIL D3DRTYPE _ TEXTURE FOURCC _ INTZ BOOL bINTZDepthStencilTexturesSupported
+ hr D3D _ OK Create an INTZ depth stencil texture IDirect3DTexture9 pINTZDST pd3dDevice CreateTexture dwWidth dwHeight 1 D3DUSAGE _ DEPTHSTENCIL
+ FOURCC _ INTZ D3DPOOL _ DEFAULT pINTZDST NULL Retrieve depth buffer surface from texture interface IDirect3DSurface9 pINTZDSTSurface pINTZDST GetSurfaceLevel 0
+ pINTZDSTSurface Bind depth buffer pd3dDevice SetDepthStencilSurface pINTZDSTSurface Bind depth buffer texture pd3dDevice SetTexture 0 pINTZDST дальнейший подготовка Depth buffer а
+ downscale до низкий разрешение быть выбирать 256х128 lock memcpy reprojection все тут достаточно тривиальный downscale делаться с маска max браться
+ максимальный расстояние близко к камера дабы не закрывать что лишний репроекция делаться путем применение обратный матрица от предыдущий кадр и
+ новый от текущий возникать пробел замазываться maxValue дабы не закрывать чего лишний итак теперь быть depth buffer теперь дело за
+ малое софтварной растеризация ббокс софтварной растеризация давать тема никак нельзя называть нехоженный тропа уже довольно много мусолить на разный лад
+ однако внятный инструкция к реализация находить не так то просто самый полезный материал который я находить по сабж быть тут
+ https software intel com en us blogs 2013 09 06 software occlus ling update 2 это крайне полезный интеловский демка
+ по conventional occlusion culling который все рекомендовать внутри много полезный первый версия функция для софтварный растеризация быть реализовать в так
+ сказать plain c она работать но довольно медленно спасибо комрад bazhenovc подсказывать переписывать на SSE я по молодость с SSE
+ еще не работать но с божий и интеловский помощь переписывать на SSE становиться работать в 2 2 5 раз быстро
+ вот она магия SIMD делиться код безвозмездно юзать на здоровье если вдруг кто замечать какой недочет или возможность для оптимизация
+ очень просить сообщать код скрывать static const int sBBIndexList 36 index for top 4 8 7 4 7 3 index
+ for bottom 5 1 2 5 2 6 index for left 5 8 4 5 4 1 index for right
+ 2 3 7 2 7 6 index for back 6 7 8 6 8 5 index for front 1 4
+ 3 1 3 2  __ m128 SSETransformCoords  __ m128 v  __ m128 m  __ m128 vResult  _ mm _ shuffle
+ _ ps v v  _ MM _ SHUFFLE 0 0 0 0 vResult  _ mm _ mul _ ps vResult
+ m 0  __ m128 vTemp  _ mm _ shuffle _ ps v v  _ MM _ SHUFFLE 1 1 1
+ 1 vTemp  _ mm _ mul _ ps vTemp m 1 vResult  _ mm _ add _ ps vResult vTemp
+ vTemp  _ mm _ shuffle _ ps v v  _ MM _ SHUFFLE 2 2 2 2 vTemp  _ mm
+ _ mul _ ps vTemp m 2 vResult  _ mm _ add _ ps vResult vTemp vResult  _ mm _
+ add _ ps vResult m 3 return vResult  __ forceinline  __ m128i Min const  __ m128i v0 const  __ m128i
+ v1  __ m128i tmp tmp  _ mm _ min _ epi32 v0 v1 return tmp  __ forceinline  __ m128i Max
+ const  __ m128i v0 const  __ m128i v1  __ m128i tmp tmp  _ mm _ max _ epi32 v0 v1
+ return tmp struct SSEVFloat4  __ m128 X  __ m128 Y  __ m128 Z  __ m128 W get 4 triangles from
+ vertices void SSEGather SSEVFloat4 pOut 3 int triId const  __ m128 xformedPos for int i 0 i 3 i int
+ ind0 sBBIndexList triId 3 i 0 1 int ind1 sBBIndexList triId 3 i 3 1 int ind2 sBBIndexList triId 3
+ i 6 1 int ind3 sBBIndexList triId 3 i 9 1  __ m128 v0 xformedPos ind0  __ m128 v1 xformedPos
+ ind1  __ m128 v2 xformedPos ind2  __ m128 v3 xformedPos ind3  _ MM _ TRANSPOSE4 _ PS v0 v1 v2
+ v3 pOut i X v0 pOut i Y v1 pOut i Z v2 pOut i W v3 now X contains
+ X0 x1 x2 x3 Y Y0 Y1 Y2 Y3 and so on bool RasterizeTestBBoxSSE Box3F box  __ m128 matrix float
+ buffer Point4I res verts and flags  __ m128 verticesSSE 8 int flags 8 static Point4F vertices 8 static Point4F xformedPos
+ 3 static int flagsLoc 3 Set DAZ and FZ MXCSR bits to flush denormals to zero i e make it
+ faster Denormal are zero DAZ is bit 6 and Flush to zero FZ is bit 15 so to enable the
+ two to have to set bits 6 and 15 which 1000 0000 0100 0000 0x8040  _ mm _ setcsr  _
+ mm _ getcsr 0x8040 init vertices Point3F center box getCenter Point3F extent box getExtents Point4F vCenter Point4F center x center
+ y center z 1 0 Point4F vHalf Point4F extent x 0 5 extent y 0 5 extent z 0 5
+ 1 0 Point4F vMin vCenter vHalf Point4F vMax vCenter vHalf fill vertices vertices 0 Point4F vMin x vMin y vMin
+ z 1 vertices 1 Point4F vMax x vMin y vMin z 1 vertices 2 Point4F vMax x vMax y vMin
+ z 1 vertices 3 Point4F vMin x vMax y vMin z 1 vertices 4 Point4F vMin x vMin y vMax
+ z 1 vertices 5 Point4F vMax x vMin y vMax z 1 vertices 6 Point4F vMax x vMax y vMax
+ z 1 vertices 7 Point4F vMin x vMax y vMax z 1 transforms for int i 0 i 8 i
+ verticesSSE i  _ mm _ loadu _ ps vertices i verticesSSE i SSETransformCoords verticesSSE i matrix  __ m128 vertX  _
+ mm _ shuffle _ ps verticesSSE i verticesSSE i  _ MM _ SHUFFLE 0 0 0 0 xxxx  __ m128
+ vertY  _ mm _ shuffle _ ps verticesSSE i verticesSSE i  _ MM _ SHUFFLE 1 1 1 1 yyyy
+  __ m128 vertZ  _ mm _ shuffle _ ps verticesSSE i verticesSSE i  _ MM _ SHUFFLE 2 2 2
+ 2 zzzz  __ m128 vertW  _ mm _ shuffle _ ps verticesSSE i verticesSSE i  _ MM _ SHUFFLE 3
+ 3 3 3 wwww static const  __ m128 sign _ mask  _ mm _ set1 _ ps 0 f 0
+ f 1 31 vertW  _ mm _ andnot _ ps sign _ mask vertW abs vertW  _ mm _ shuffle
+ _ ps vertW  _ mm _ set1 _ ps 1 0f  _ MM _ SHUFFLE 0 0 0 0 w
+ w 1 1 vertW  _ mm _ shuffle _ ps vertW vertW  _ MM _ SHUFFLE 3 0 0 0
+ w w w 1 project verticesSSE i  _ mm _ div _ ps verticesSSE i vertW now vertices are between
+ 1 and 1 const  __ m128 sadd  _ mm _ setr _ ps res x 0 5 res y 0
+ 5 0 0 const  __ m128 smult  _ mm _ setr _ ps res x 0 5 res y 0
+ 5 1 1 verticesSSE i  _ mm _ add _ ps sadd  _ mm _ mul _ ps verticesSSE i
+ smult Rasterize the AABB triangles 4 at a time for int i 0 i 12 i 4 SSEVFloat4 xformedPos 3
+ SSEGather xformedPos i verticesSSE by 3 vertices fxPtX 0 X0 X1 X2 X3 of 1st vert in 4 triangles fxPtX
+ 1 X0 X1 X2 X3 of 2nd vert in 4 triangles and so on  __ m128i fxPtX 3 fxPtY 3
+ for int m 0 m 3 m fxPtX m  _ mm _ cvtps _ epi32 xformedPos m X fxPtY m
+  _ mm _ cvtps _ epi32 xformedPos m Y Fab x y Ax By C 0 Fab x y ya
+ yb x xb xa y xa yb xb ya 0 Compute A ya yb for the 3 line segments that
+ make up each triangle  __ m128i A0  _ mm _ sub _ epi32 fxPtY 1 fxPtY 2  __ m128i A1
+  _ mm _ sub _ epi32 fxPtY 2 fxPtY 0  __ m128i A2  _ mm _ sub _ epi32 fxPtY
+ 0 fxPtY 1 Compute B xb xa for the 3 line segments that make up each triangle  __ m128i B0
+  _ mm _ sub _ epi32 fxPtX 2 fxPtX 1  __ m128i B1  _ mm _ sub _ epi32 fxPtX
+ 0 fxPtX 2  __ m128i B2  _ mm _ sub _ epi32 fxPtX 1 fxPtX 0 Compute C xa yb
+ xb ya for the 3 line segments that make up each triangle  __ m128i C0  _ mm _ sub _
+ epi32  _ mm _ mullo _ epi32 fxPtX 1 fxPtY 2  _ mm _ mullo _ epi32 fxPtX 2 fxPtY
+ 1  __ m128i C1  _ mm _ sub _ epi32  _ mm _ mullo _ epi32 fxPtX 2 fxPtY 0
+  _ mm _ mullo _ epi32 fxPtX 0 fxPtY 2  __ m128i C2  _ mm _ sub _ epi32  _
+ mm _ mullo _ epi32 fxPtX 0 fxPtY 1  _ mm _ mullo _ epi32 fxPtX 1 fxPtY 0 Compute
+ triangle area  __ m128i triArea  _ mm _ mullo _ epi32 B2 A1 triArea  _ mm _ sub _ epi32
+ triArea  _ mm _ mullo _ epi32 B1 A2  __ m128 oneOverTriArea  _ mm _ div _ ps  _ mm
+ _ set1 _ ps 1 0f  _ mm _ cvtepi32 _ ps triArea  __ m128 Z 3 Z 0 xformedPos
+ 0 W Z 1  _ mm _ mul _ ps  _ mm _ sub _ ps xformedPos 1 W Z
+ 0 oneOverTriArea Z 2  _ mm _ mul _ ps  _ mm _ sub _ ps xformedPos 2 W Z
+ 0 oneOverTriArea Use bounding box traversal strategy to determine which pixels to rasterize  __ m128i startX  _ mm _ and
+ _ si128 Max Min Min fxPtX 0 fxPtX 1 fxPtX 2  _ mm _ set1 _ epi32 0  _ mm
+ _ set1 _ epi32 1  __ m128i endX Min Max Max fxPtX 0 fxPtX 1 fxPtX 2  _ mm _
+ set1 _ epi32 res x 1  __ m128i startY  _ mm _ and _ si128 Max Min Min fxPtY 0
+ fxPtY 1 fxPtY 2  _ mm _ set1 _ epi32 0  _ mm _ set1 _ epi32 1  __ m128i
+ endY Min Max Max fxPtY 0 fxPtY 1 fxPtY 2  _ mm _ set1 _ epi32 res y 1 Now
+ we have 4 triangles set up Rasterize them each individually for int lane 0 lane 4 lane Skip triangle if
+ area is zero if triArea m128i _ i32 lane 0 continue Extract this triangle s properties from the SIMD versions
+  __ m128 zz 3 for int vv 0 vv 3 vv zz vv  _ mm _ set1 _ ps Z
+ vv m128 _ f32 lane drop culled triangle int startXx startX m128i _ i32 lane int endXx endX m128i _
+ i32 lane int startYy startY m128i _ i32 lane int endYy endY m128i _ i32 lane  __ m128i aa0  _
+ mm _ set1 _ epi32 A0 m128i _ i32 lane  __ m128i aa1  _ mm _ set1 _ epi32 A1
+ m128i _ i32 lane  __ m128i aa2  _ mm _ set1 _ epi32 A2 m128i _ i32 lane  __ m128i
+ bb0  _ mm _ set1 _ epi32 B0 m128i _ i32 lane  __ m128i bb1  _ mm _ set1 _
+ epi32 B1 m128i _ i32 lane  __ m128i bb2  _ mm _ set1 _ epi32 B2 m128i _ i32 lane
+  __ m128i cc0  _ mm _ set1 _ epi32 C0 m128i _ i32 lane  __ m128i cc1  _ mm _
+ set1 _ epi32 C1 m128i _ i32 lane  __ m128i cc2  _ mm _ set1 _ epi32 C2 m128i _
+ i32 lane  __ m128i aa0Inc  _ mm _ mul _ epi32 aa0  _ mm _ setr _ epi32 1 2
+ 3 4  __ m128i aa1Inc  _ mm _ mul _ epi32 aa1  _ mm _ setr _ epi32 1 2
+ 3 4  __ m128i aa2Inc  _ mm _ mul _ epi32 aa2  _ mm _ setr _ epi32 1 2
+ 3 4  __ m128i alpha0  _ mm _ add _ epi32  _ mm _ mul _ epi32 aa0  _ mm
+ _ set1 _ epi32 startXx  _ mm _ mul _ epi32 bb0  _ mm _ set1 _ epi32 startYy alpha0
+  _ mm _ add _ epi32 cc0 alpha0  __ m128i beta0  _ mm _ add _ epi32  _ mm _
+ mul _ epi32 aa1  _ mm _ set1 _ epi32 startXx  _ mm _ mul _ epi32 bb1  _ mm
+ _ set1 _ epi32 startYy beta0  _ mm _ add _ epi32 cc1 beta0  __ m128i gama0  _ mm _
+ add _ epi32  _ mm _ mul _ epi32 aa2  _ mm _ set1 _ epi32 startXx  _ mm _
+ mul _ epi32 bb2  _ mm _ set1 _ epi32 startYy gama0  _ mm _ add _ epi32 cc2 gama0
+ int rowIdx startYy res x startXx  __ m128 zx  _ mm _ mul _ ps  _ mm _ cvtepi32 _
+ ps aa1 zz 1 zx  _ mm _ add _ ps zx  _ mm _ mul _ ps  _ mm
+ _ cvtepi32 _ ps aa2 zz 2 zx  _ mm _ mul _ ps zx  _ mm _ setr _
+ ps 1 f 2 f 3 f 4 f Texels traverse for int r startYy r endYy r rowIdx res
+ x alpha0  _ mm _ add _ epi32 alpha0 bb0 beta0  _ mm _ add _ epi32 beta0 bb1 gama0
+  _ mm _ add _ epi32 gama0 bb2 Compute barycentric coordinates Z0 as an origin int index rowIdx  __ m128i
+ alpha alpha0  __ m128i beta beta0  __ m128i gama gama0 Compute barycentric interpolated depth  __ m128 depth zz 0 depth
+  _ mm _ add _ ps depth  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps beta
+ zz 1 depth  _ mm _ add _ ps depth  _ mm _ mul _ ps  _ mm _ cvtepi32
+ _ ps gama zz 2  __ m128i anyOut  _ mm _ setzero _ si128  __ m128i mask  __ m128 previousDepth
+  __ m128 depthMask  __ m128i finalMask for int c startXx c endXx c 4 index 4 alpha  _ mm _
+ add _ epi32 alpha aa0Inc beta  _ mm _ add _ epi32 beta aa1Inc gama  _ mm _ add _
+ epi32 gama aa2Inc depth  _ mm _ add _ ps depth zx mask  _ mm _ or _ si128  _
+ mm _ or _ si128 alpha beta gama previousDepth  _ mm _ loadu _ ps buffer index calculate current depth
+ log depth 6 907755375 0 048254941  __ m128 curdepth  _ mm _ mul _ ps  _ mm _ sub _
+ ps log _ ps depth  _ mm _ set1 _ ps 6 907755375  _ mm _ set1 _ ps 0
+ 048254941 curdepth  _ mm _ sub _ ps curdepth  _ mm _ set1 _ ps 0 05 depthMask  _ mm
+ _ cmplt _ ps curdepth previousDepth finalMask  _ mm _ andnot _ si128 mask  _ mm _ castps _ si128
+ depthMask anyOut  _ mm _ or _ si128 anyOut finalMask for each column if  _ mm _ testz _ si128
+ anyOut  _ mm _ set1 _ epi32 0x80000000 stop timer QueryPerformanceCounter t2 compute and print the elapsed time in millisec
+ elapsedTime t2 QuadPart t1 QuadPart 1000 0 frequency QuadPart RasterizationStats RasterizeSSETimeSpent elapsedTime return true early exit for each row for
+ each triangle for each set of SIMD triangles return false собственно все технология Coverage Buffer в общий черта готовый в
+ процесс имплементация правда вскрываться еще ряд другой сложность и баг связывать с рендер лес на борьба с который уходить в
+ 20 раз много время чем на сам C Buffer но борьба с они не входить в тема данный пост результат
+ использование технология C Buffer для интеллектуальный OC для рендеринг лес позволять уменьшать время рендер кадр на открытый пространство от 5
+ до 20мс а в закрывать до 30мс в случай когда отсекаться весь растительность однако давать оверхед в 1 5 2мс
+ при неэффективный отсечение т е технология использовать но ничто не отсечься резальт можно быть наблюдать в проект после внимательный тестирование
+ в то число и на совместимость с архаичный машина думать через пара неделя coverage buffer CryEngine occlusion culling 21 октябрь
+ 2015 обновление 31 дека 2018 комментарий 23 убирать реклама контакт сообщество участник каталог сайт категория архив новость GameDev ru разработка
+ игра 2001 2019   Coverage   Buffer   из   CryENGINE   в   деталь   график   статья   программирование   игра   новость   статья   код   арт   дизайн   индустрия   подсказка   термин   FAQ   страница   сообщество   форум   качалка   участник   пользователь   темный   тема   публикация   проект   форум   работа   входить   программированиестатьиграфика   Coverage   Buffer   из   CryENGINE   в   деталь   автор   Mephisto   std   некоторый   время   назад   я   наткнуться   в   замечательный   презентация   Secrets   of   CryEGNINE   3   Graphics   Technology   от   не   менее   замечательный   Nickolay   Kasyan   Nicolas   Schulz   и   Tiago   Sousa   на   описание   любопытный   технология   называть   автор   Coverage   Buffer   с   сам   презентация   можно   ознакомляться   тут   http   www   slideshare   net   TiagoAlexSousa   secrets   of   cryengine   3   g   cs   technology   технология   представлять   как   основной   метод   окклюдить   куллинг   активно   использовать   начинать   с   Crysis   2   так   как   никакой   внятный   пейпер   по   данный   технология   Crytek   не   предоставлять   а   разбираться   быть   интересный   то   приходиться   плясать   с   то   что   иметь   что   итак   идея   по   слово   автор   презентация   заключаться   в   следующий   получать   depth   buffer   предыдущий   кадр   сделать   репроекция   в   текущий   кадр   софтварный   растеризовать   BBox   ы   объект   проверять   видный   ли   они   камера   и   рисовать   не   рисовать   метод   в   принцип   не   содержать   никакой   революционный   идея   отличие   от   основной   конкурент   Software   Occlusion   Culling   заключаться   в   тот   в   тот   метод   мы   необходимо   строго   поделить   объект   на   категория   Occluder   Occludee   что   не   всегда   возможно   сделать   итак   еще   раз   кратко   резюмировать   каков   плюс   этот   метод   не   нужно   разделять   объект   на   occluder   occludee   использование   уже   готовый   depth   buffer   ну   и   очевидный   минус   ошибка   связывать   с   отставание   на   1   кадр   репроекция   полностью   не   решать   данный   проблема   оверхед   при   полный   видимость   объект   связывать   с   манипуляция   с   depth   buffer   downscale   lock   и   т   д   где   так   уж   получаться   что   я   гуглить   в   сторона   Occlusion   Culling   не   просто   так   на   проект   необходимо   быть   решать   довольно   важный   задача   связывать   с   тормоз   возникать   из   за   огромный   лесной   массив   речь   идти   конечно   же   о   горячо   любимый   я   Life   is   Feudal   весь   скрин   ниже   быть   оттуда   итак   вкратце   суть   изначальный   проблема   быть   остров   густо   засаживать   дерево   рисоваться   весь   этот   действо   на   движок   Torque3D   из   оптимизация   изначально   встроенный   в   движок   быть   неплохой   система   батчинга   биллборд   для   дальний   дерево   и   инстансинг   для   тот   который   близко   однако   решение   рисовать   не   рисовать   приниматься   по   дефолт   исключительно   в   результат   frustum   culling   а   т   е   мы   смотреть   попадать   ли   данный   дерево   батч   в   пирамида   и   если   попадать   то   рисовать   однако   такой   подход   не   вполне   оправдывать   себя   в   случай   действительно   большой   лесной   массив   с   десяток   тысяча   дерево   в   этот   случай   попадать   во   фрустум   и   как   следствие   рисоваться   тот   дерево   который   находиться   за   стена   гора   и   другой   дерево   из   за   это   бюджет   кадр   терпеть   катастрофический   потеря   даже   смотреть   сквозь   стена   в   направление   центр   остров   рисование   невидимый   батч   и   дерево   занимать   порядко   20   30мс   что   в   общий   то   вплотную   приближаться   к   рассчетный   бюджет   кадр   33мс   как   результат   игрок   получать   драматический   падение   фпс   просто   глядеть   в   направление   центр   остров   для   решение   данный   задача   быть   решать   воспользоваться   технология   Coverage   Buffer   если   бы   я   писать   например   диплом   то   тут   бы   стоить   сделать   обзор   весь   остальной   метод   OC   обозначать   плюс   и   минус   и   обосновывать   почему   быть   выбирать   именно   этот   к   счастие   это   не   диплом   потому   ограничиваться   один   предложение   после   чтение   многочисленный   пейпер   и   статья   переписка   и   беседа   с   более   мудрый   и   опытный   коллега   быть   решать   опробовать   этот   метод   то   более   что   в   бой   он   уже   себя   показывать   оставаться   лишь   посмотреть   как   он   показывать   себя   в   наш   ситуация   когда   как   теперь   переходить   к   технический   деталь   и   собственно   код   первый   задача   который   вставать   это   получать   depth   buffer   Torque3D   который   на   момент   написание   статья   поддерживать   DirectX   только   9й   версия   накладывать   в   этот   свет   определенный   ограничение   как   получать   Depth   Buffer   в   DirectX   9   ответ   находиться   на   сайт   арас   пранцкевичус   я   не   уверенный   что   правильно   транслитерировать   его   фамилия   это   главный   render   guy   известный   движок   Unity   http   aras   p   info   texts   D3D9GPUHacks   html   оказываться   что   depth   buffer   получать   в   directX   9   весь   таки   можно   но   для   это   нужно   использовать   специальный   формат   INTZ   согласно   официальный   документация   от   AMD   и   NVidia   весь   видеокарта   выпускать   начинать   с   2008го   год   поддерживать   данный   формат   для   более   ранний   быть   RAWZ   так   что   можно   без   особый   опасение   пользоваться   данный   хак   ссылка   на   документация   AMD   и   NVidia   код   использование   тривиальный   взять   из   один   из   пейпер   вверху   приводить   его   тут   чтобы   так   сказать   весь   яйцо   быть   в   один   корзина   INTZ   скрывать   define   FOURCC _ INTZ   D3DFORMAT   MAKEFOURCC   I   N   T   Z   Determine   if   INTZ   is   supported   HRESULT   hr   hr   pd3d   CheckDeviceFormat   AdapterOrdinal   DeviceType   AdapterFormat   D3DUSAGE _ DEPTHSTENCIL   D3DRTYPE _ TEXTURE   FOURCC _ INTZ   BOOL   bINTZDepthStencilTexturesSupported   hr   D3D _ OK   Create   an   INTZ   depth   stencil   texture   IDirect3DTexture9   pINTZDST   pd3dDevice   CreateTexture   dwWidth   dwHeight   1   D3DUSAGE _ DEPTHSTENCIL   FOURCC _ INTZ   D3DPOOL _ DEFAULT   pINTZDST   NULL   Retrieve   depth   buffer   surface   from   texture   interface   IDirect3DSurface9   pINTZDSTSurface   pINTZDST   GetSurfaceLevel   0   pINTZDSTSurface   Bind   depth   buffer   pd3dDevice   SetDepthStencilSurface   pINTZDSTSurface   Bind   depth   buffer   texture   pd3dDevice   SetTexture   0   pINTZDST   дальнейший   подготовка   Depth   buffer   а   downscale   до   низкий   разрешение   быть   выбирать   256х128   lock   memcpy   reprojection   все   тут   достаточно   тривиальный   downscale   делаться   с   маска   max   браться   максимальный   расстояние   близко   к   камера   дабы   не   закрывать   что   лишний   репроекция   делаться   путем   применение   обратный   матрица   от   предыдущий   кадр   и   новый   от   текущий   возникать   пробел   замазываться   maxValue   дабы   не   закрывать   чего   лишний   итак   теперь   быть   depth   buffer   теперь   дело   за   малое   софтварной   растеризация   ббокс   софтварной   растеризация   давать   тема   никак   нельзя   называть   нехоженный   тропа   уже   довольно   много   мусолить   на   разный   лад   однако   внятный   инструкция   к   реализация   находить   не   так   то   просто   самый   полезный   материал   который   я   находить   по   сабж   быть   тут   https   software   intel   com   en   us   blogs   2013   09   06   software   occlus   ling   update   2   это   крайне   полезный   интеловский   демка   по   conventional   occlusion   culling   который   все   рекомендовать   внутри   много   полезный   первый   версия   функция   для   софтварный   растеризация   быть   реализовать   в   так   сказать   plain   c   она   работать   но   довольно   медленно   спасибо   комрад   bazhenovc   подсказывать   переписывать   на   SSE   я   по   молодость   с   SSE   еще   не   работать   но   с   божий   и   интеловский   помощь   переписывать   на   SSE   становиться   работать   в   2   2   5   раз   быстро   вот   она   магия   SIMD   делиться   код   безвозмездно   юзать   на   здоровье   если   вдруг   кто   замечать   какой   недочет   или   возможность   для   оптимизация   очень   просить   сообщать   код   скрывать   static   const   int   sBBIndexList   36   index   for   top   4   8   7   4   7   3   index   for   bottom   5   1   2   5   2   6   index   for   left   5   8   4   5   4   1   index   for   right   2   3   7   2   7   6   index   for   back   6   7   8   6   8   5   index   for   front   1   4   3   1   3   2  __ m128   SSETransformCoords  __ m128   v  __ m128   m  __ m128   vResult  _ mm _ shuffle _ ps   v   v  _ MM _ SHUFFLE   0   0   0   0   vResult  _ mm _ mul _ ps   vResult   m   0  __ m128   vTemp  _ mm _ shuffle _ ps   v   v  _ MM _ SHUFFLE   1   1   1   1   vTemp  _ mm _ mul _ ps   vTemp   m   1   vResult  _ mm _ add _ ps   vResult   vTemp   vTemp  _ mm _ shuffle _ ps   v   v  _ MM _ SHUFFLE   2   2   2   2   vTemp  _ mm _ mul _ ps   vTemp   m   2   vResult  _ mm _ add _ ps   vResult   vTemp   vResult  _ mm _ add _ ps   vResult   m   3   return   vResult  __ forceinline  __ m128i   Min   const  __ m128i   v0   const  __ m128i   v1  __ m128i   tmp   tmp  _ mm _ min _ epi32   v0   v1   return   tmp  __ forceinline  __ m128i   Max   const  __ m128i   v0   const  __ m128i   v1  __ m128i   tmp   tmp  _ mm _ max _ epi32   v0   v1   return   tmp   struct   SSEVFloat4  __ m128   X  __ m128   Y  __ m128   Z  __ m128   W   get   4   triangles   from   vertices   void   SSEGather   SSEVFloat4   pOut   3   int   triId   const  __ m128   xformedPos   for   int   i   0   i   3   i   int   ind0   sBBIndexList   triId   3   i   0   1   int   ind1   sBBIndexList   triId   3   i   3   1   int   ind2   sBBIndexList   triId   3   i   6   1   int   ind3   sBBIndexList   triId   3   i   9   1  __ m128   v0   xformedPos   ind0  __ m128   v1   xformedPos   ind1  __ m128   v2   xformedPos   ind2  __ m128   v3   xformedPos   ind3  _ MM _ TRANSPOSE4 _ PS   v0   v1   v2   v3   pOut   i   X   v0   pOut   i   Y   v1   pOut   i   Z   v2   pOut   i   W   v3   now   X   contains   X0   x1   x2   x3   Y   Y0   Y1   Y2   Y3   and   so   on   bool   RasterizeTestBBoxSSE   Box3F   box  __ m128   matrix   float   buffer   Point4I   res   verts   and   flags  __ m128   verticesSSE   8   int   flags   8   static   Point4F   vertices   8   static   Point4F   xformedPos   3   static   int   flagsLoc   3   Set   DAZ   and   FZ   MXCSR   bits   to   flush   denormals   to   zero   i   e   make   it   faster   Denormal   are   zero   DAZ   is   bit   6   and   Flush   to   zero   FZ   is   bit   15   so   to   enable   the   two   to   have   to   set   bits   6   and   15   which   1000   0000   0100   0000   0x8040  _ mm _ setcsr  _ mm _ getcsr   0x8040   init   vertices   Point3F   center   box   getCenter   Point3F   extent   box   getExtents   Point4F   vCenter   Point4F   center   x   center   y   center   z   1   0   Point4F   vHalf   Point4F   extent   x   0   5   extent   y   0   5   extent   z   0   5   1   0   Point4F   vMin   vCenter   vHalf   Point4F   vMax   vCenter   vHalf   fill   vertices   vertices   0   Point4F   vMin   x   vMin   y   vMin   z   1   vertices   1   Point4F   vMax   x   vMin   y   vMin   z   1   vertices   2   Point4F   vMax   x   vMax   y   vMin   z   1   vertices   3   Point4F   vMin   x   vMax   y   vMin   z   1   vertices   4   Point4F   vMin   x   vMin   y   vMax   z   1   vertices   5   Point4F   vMax   x   vMin   y   vMax   z   1   vertices   6   Point4F   vMax   x   vMax   y   vMax   z   1   vertices   7   Point4F   vMin   x   vMax   y   vMax   z   1   transforms   for   int   i   0   i   8   i   verticesSSE   i  _ mm _ loadu _ ps   vertices   i   verticesSSE   i   SSETransformCoords   verticesSSE   i   matrix  __ m128   vertX  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE   i  _ MM _ SHUFFLE   0   0   0   0   xxxx  __ m128   vertY  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE   i  _ MM _ SHUFFLE   1   1   1   1   yyyy  __ m128   vertZ  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE   i  _ MM _ SHUFFLE   2   2   2   2   zzzz  __ m128   vertW  _ mm _ shuffle _ ps   verticesSSE   i   verticesSSE   i  _ MM _ SHUFFLE   3   3   3   3   wwww   static   const  __ m128   sign _ mask  _ mm _ set1 _ ps   0   f   0   f   1   31   vertW  _ mm _ andnot _ ps   sign _ mask   vertW   abs   vertW  _ mm _ shuffle _ ps   vertW  _ mm _ set1 _ ps   1   0f  _ MM _ SHUFFLE   0   0   0   0   w   w   1   1   vertW  _ mm _ shuffle _ ps   vertW   vertW  _ MM _ SHUFFLE   3   0   0   0   w   w   w   1   project   verticesSSE   i  _ mm _ div _ ps   verticesSSE   i   vertW   now   vertices   are   between   1   and   1   const  __ m128   sadd  _ mm _ setr _ ps   res   x   0   5   res   y   0   5   0   0   const  __ m128   smult  _ mm _ setr _ ps   res   x   0   5   res   y   0   5   1   1   verticesSSE   i  _ mm _ add _ ps   sadd  _ mm _ mul _ ps   verticesSSE   i   smult   Rasterize   the   AABB   triangles   4   at   a   time   for   int   i   0   i   12   i   4   SSEVFloat4   xformedPos   3   SSEGather   xformedPos   i   verticesSSE   by   3   vertices   fxPtX   0   X0   X1   X2   X3   of   1st   vert   in   4   triangles   fxPtX   1   X0   X1   X2   X3   of   2nd   vert   in   4   triangles   and   so   on  __ m128i   fxPtX   3   fxPtY   3   for   int   m   0   m   3   m   fxPtX   m  _ mm _ cvtps _ epi32   xformedPos   m   X   fxPtY   m  _ mm _ cvtps _ epi32   xformedPos   m   Y   Fab   x   y   Ax   By   C   0   Fab   x   y   ya   yb   x   xb   xa   y   xa   yb   xb   ya   0   Compute   A   ya   yb   for   the   3   line   segments   that   make   up   each   triangle  __ m128i   A0  _ mm _ sub _ epi32   fxPtY   1   fxPtY   2  __ m128i   A1  _ mm _ sub _ epi32   fxPtY   2   fxPtY   0  __ m128i   A2  _ mm _ sub _ epi32   fxPtY   0   fxPtY   1   Compute   B   xb   xa   for   the   3   line   segments   that   make   up   each   triangle  __ m128i   B0  _ mm _ sub _ epi32   fxPtX   2   fxPtX   1  __ m128i   B1  _ mm _ sub _ epi32   fxPtX   0   fxPtX   2  __ m128i   B2  _ mm _ sub _ epi32   fxPtX   1   fxPtX   0   Compute   C   xa   yb   xb   ya   for   the   3   line   segments   that   make   up   each   triangle  __ m128i   C0  _ mm _ sub _ epi32  _ mm _ mullo _ epi32   fxPtX   1   fxPtY   2  _ mm _ mullo _ epi32   fxPtX   2   fxPtY   1  __ m128i   C1  _ mm _ sub _ epi32  _ mm _ mullo _ epi32   fxPtX   2   fxPtY   0  _ mm _ mullo _ epi32   fxPtX   0   fxPtY   2  __ m128i   C2  _ mm _ sub _ epi32  _ mm _ mullo _ epi32   fxPtX   0   fxPtY   1  _ mm _ mullo _ epi32   fxPtX   1   fxPtY   0   Compute   triangle   area  __ m128i   triArea  _ mm _ mullo _ epi32   B2   A1   triArea  _ mm _ sub _ epi32   triArea  _ mm _ mullo _ epi32   B1   A2  __ m128   oneOverTriArea  _ mm _ div _ ps  _ mm _ set1 _ ps   1   0f  _ mm _ cvtepi32 _ ps   triArea  __ m128   Z   3   Z   0   xformedPos   0   W   Z   1  _ mm _ mul _ ps  _ mm _ sub _ ps   xformedPos   1   W   Z   0   oneOverTriArea   Z   2  _ mm _ mul _ ps  _ mm _ sub _ ps   xformedPos   2   W   Z   0   oneOverTriArea   Use   bounding   box   traversal   strategy   to   determine   which   pixels   to   rasterize  __ m128i   startX  _ mm _ and _ si128   Max   Min   Min   fxPtX   0   fxPtX   1   fxPtX   2  _ mm _ set1 _ epi32   0  _ mm _ set1 _ epi32   1  __ m128i   endX   Min   Max   Max   fxPtX   0   fxPtX   1   fxPtX   2  _ mm _ set1 _ epi32   res   x   1  __ m128i   startY  _ mm _ and _ si128   Max   Min   Min   fxPtY   0   fxPtY   1   fxPtY   2  _ mm _ set1 _ epi32   0  _ mm _ set1 _ epi32   1  __ m128i   endY   Min   Max   Max   fxPtY   0   fxPtY   1   fxPtY   2  _ mm _ set1 _ epi32   res   y   1   Now   we   have   4   triangles   set   up   Rasterize   them   each   individually   for   int   lane   0   lane   4   lane   Skip   triangle   if   area   is   zero   if   triArea   m128i _ i32   lane   0   continue   Extract   this   triangle   s   properties   from   the   SIMD   versions  __ m128   zz   3   for   int   vv   0   vv   3   vv   zz   vv  _ mm _ set1 _ ps   Z   vv   m128 _ f32   lane   drop   culled   triangle   int   startXx   startX   m128i _ i32   lane   int   endXx   endX   m128i _ i32   lane   int   startYy   startY   m128i _ i32   lane   int   endYy   endY   m128i _ i32   lane  __ m128i   aa0  _ mm _ set1 _ epi32   A0   m128i _ i32   lane  __ m128i   aa1  _ mm _ set1 _ epi32   A1   m128i _ i32   lane  __ m128i   aa2  _ mm _ set1 _ epi32   A2   m128i _ i32   lane  __ m128i   bb0  _ mm _ set1 _ epi32   B0   m128i _ i32   lane  __ m128i   bb1  _ mm _ set1 _ epi32   B1   m128i _ i32   lane  __ m128i   bb2  _ mm _ set1 _ epi32   B2   m128i _ i32   lane  __ m128i   cc0  _ mm _ set1 _ epi32   C0   m128i _ i32   lane  __ m128i   cc1  _ mm _ set1 _ epi32   C1   m128i _ i32   lane  __ m128i   cc2  _ mm _ set1 _ epi32   C2   m128i _ i32   lane  __ m128i   aa0Inc  _ mm _ mul _ epi32   aa0  _ mm _ setr _ epi32   1   2   3   4  __ m128i   aa1Inc  _ mm _ mul _ epi32   aa1  _ mm _ setr _ epi32   1   2   3   4  __ m128i   aa2Inc  _ mm _ mul _ epi32   aa2  _ mm _ setr _ epi32   1   2   3   4  __ m128i   alpha0  _ mm _ add _ epi32  _ mm _ mul _ epi32   aa0  _ mm _ set1 _ epi32   startXx  _ mm _ mul _ epi32   bb0  _ mm _ set1 _ epi32   startYy   alpha0  _ mm _ add _ epi32   cc0   alpha0  __ m128i   beta0  _ mm _ add _ epi32  _ mm _ mul _ epi32   aa1  _ mm _ set1 _ epi32   startXx  _ mm _ mul _ epi32   bb1  _ mm _ set1 _ epi32   startYy   beta0  _ mm _ add _ epi32   cc1   beta0  __ m128i   gama0  _ mm _ add _ epi32  _ mm _ mul _ epi32   aa2  _ mm _ set1 _ epi32   startXx  _ mm _ mul _ epi32   bb2  _ mm _ set1 _ epi32   startYy   gama0  _ mm _ add _ epi32   cc2   gama0   int   rowIdx   startYy   res   x   startXx  __ m128   zx  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps   aa1   zz   1   zx  _ mm _ add _ ps   zx  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps   aa2   zz   2   zx  _ mm _ mul _ ps   zx  _ mm _ setr _ ps   1   f   2   f   3   f   4   f   Texels   traverse   for   int   r   startYy   r   endYy   r   rowIdx   res   x   alpha0  _ mm _ add _ epi32   alpha0   bb0   beta0  _ mm _ add _ epi32   beta0   bb1   gama0  _ mm _ add _ epi32   gama0   bb2   Compute   barycentric   coordinates   Z0   as   an   origin   int   index   rowIdx  __ m128i   alpha   alpha0  __ m128i   beta   beta0  __ m128i   gama   gama0   Compute   barycentric   interpolated   depth  __ m128   depth   zz   0   depth  _ mm _ add _ ps   depth  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps   beta   zz   1   depth  _ mm _ add _ ps   depth  _ mm _ mul _ ps  _ mm _ cvtepi32 _ ps   gama   zz   2  __ m128i   anyOut  _ mm _ setzero _ si128  __ m128i   mask  __ m128   previousDepth  __ m128   depthMask  __ m128i   finalMask   for   int   c   startXx   c   endXx   c   4   index   4   alpha  _ mm _ add _ epi32   alpha   aa0Inc   beta  _ mm _ add _ epi32   beta   aa1Inc   gama  _ mm _ add _ epi32   gama   aa2Inc   depth  _ mm _ add _ ps   depth   zx   mask  _ mm _ or _ si128  _ mm _ or _ si128   alpha   beta   gama   previousDepth  _ mm _ loadu _ ps   buffer   index   calculate   current   depth   log   depth   6   907755375   0   048254941  __ m128   curdepth  _ mm _ mul _ ps  _ mm _ sub _ ps   log _ ps   depth  _ mm _ set1 _ ps   6   907755375  _ mm _ set1 _ ps   0   048254941   curdepth  _ mm _ sub _ ps   curdepth  _ mm _ set1 _ ps   0   05   depthMask  _ mm _ cmplt _ ps   curdepth   previousDepth   finalMask  _ mm _ andnot _ si128   mask  _ mm _ castps _ si128   depthMask   anyOut  _ mm _ or _ si128   anyOut   finalMask   for   each   column   if  _ mm _ testz _ si128   anyOut  _ mm _ set1 _ epi32   0x80000000   stop   timer   QueryPerformanceCounter   t2   compute   and   print   the   elapsed   time   in   millisec   elapsedTime   t2   QuadPart   t1   QuadPart   1000   0   frequency   QuadPart   RasterizationStats   RasterizeSSETimeSpent   elapsedTime   return   true   early   exit   for   each   row   for   each   triangle   for   each   set   of   SIMD   triangles   return   false   собственно   все   технология   Coverage   Buffer   в   общий   черта   готовый   в   процесс   имплементация   правда   вскрываться   еще   ряд   другой   сложность   и   баг   связывать   с   рендер   лес   на   борьба   с   который   уходить   в   20   раз   много   время   чем   на   сам   C   Buffer   но   борьба   с   они   не   входить   в   тема   данный   пост   результат   использование   технология   C   Buffer   для   интеллектуальный   OC   для   рендеринг   лес   позволять   уменьшать   время   рендер   кадр   на   открытый   пространство   от   5   до   20мс   а   в   закрывать   до   30мс   в   случай   когда   отсекаться   весь   растительность   однако   давать   оверхед   в   1   5   2мс   при   неэффективный   отсечение   т   е   технология   использовать   но   ничто   не   отсечься   резальт   можно   быть   наблюдать   в   проект   после   внимательный   тестирование   в   то   число   и   на   совместимость   с   архаичный   машина   думать   через   пара   неделя   coverage   buffer   CryEngine   occlusion   culling   21   октябрь   2015   обновление   31   дека   2018   комментарий   23   убирать   реклама   контакт   сообщество   участник   каталог   сайт   категория   архив   новость   GameDev   ru   разработка   игра   2001   2019
