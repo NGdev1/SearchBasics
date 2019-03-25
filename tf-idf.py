@@ -1,5 +1,6 @@
 import json
 import math
+import functions
 
 
 with open('sites/index.json', 'r') as file_handle:
@@ -8,36 +9,29 @@ with open('sites/index.json', 'r') as file_handle:
 with open('lemmatized/inverted_index.json', 'r') as file_handle:
     inverted_index = json.load(file_handle)
 
-
-def write_to_file_results(dictionary, title, format):
-    with open('tf-idf/' + title + '.txt', "w") as f:
-        f.write("Лемма".rjust(20) + "|")
-        f.write(title.rjust(20))
-        f.write("\n")
-        f.write("-----------------------------------------")
-        f.write("\n")
-        for lemma in dictionary.keys():
-            f.write(str(lemma + " ").rjust(20) + "|")
-            f.write(format.format(dictionary[lemma]).rjust(20))
-            f.write("\n")
-        f.close()
-
-tokens_tf = {}
+doc_count = len(links)
+lemmas = {}
 for filename in links:
-
-    print("calculate TF for " + filename + "/" + str(len(links)))
 
     f = open('lemmatized/' + filename, 'r')
     text = f.read()
     f.close()
 
-    lemmas = text.split()
+    lemmas_in_file = text.split()
+    lemmas[filename] = lemmas_in_file
 
-    for lemma in lemmas:
+tokens_tf = {}
+for filename in lemmas:
+    print("calculate TF for " + filename + "/" + str(doc_count))
+    for lemma in lemmas[filename]:
         if lemma not in tokens_tf:
-            tokens_tf[lemma] = 0
-        tokens_tf[lemma] += 1
-write_to_file_results(tokens_tf, "TF", "{}")
+            tokens_tf[lemma] = {}
+            for filename_temp in links:
+                tokens_tf[lemma][filename_temp] = 0
+
+        tokens_tf[lemma][filename] += 1
+
+functions.write_to_file_results(tokens_tf, "TF", "{}")
 
 tokens_df = {}
 print("calculate DF")
@@ -47,12 +41,19 @@ for lemma in inverted_index:
 
     for index, value in enumerate(inverted_index[lemma]):
         tokens_df[lemma] += value
-write_to_file_results(tokens_df, "DF", "{}")
+functions.write_to_file_results(tokens_df, "DF", "{}", for_each_document=False)
+
+tokens_idf = {}
+print("calculate IDF")
+for lemma in inverted_index:
+    tokens_idf[lemma] = math.log(doc_count / tokens_df[lemma])
+functions.write_to_file_results(tokens_idf, "IDF", "{:.4f}", for_each_document=False)
 
 tf_idf = {}
-doc_count = len(links)
-print("calculate TF-IDF")
-for lemma in inverted_index:
-    tf_idf[lemma] = tokens_tf[lemma] * math.log(doc_count / tokens_df[lemma])
-write_to_file_results(tf_idf, "TF-IDF", "{:.4f}")
-
+print("calculate TF*IDF")
+for lemma in tokens_tf:
+    for filename in tokens_tf[lemma]:
+        if lemma not in tf_idf:
+            tf_idf[lemma] = []
+        tf_idf[lemma].append(tokens_tf[lemma][filename] * tokens_idf[lemma])
+functions.write_to_file_tf_idf(tf_idf)
