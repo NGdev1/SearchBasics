@@ -17,9 +17,6 @@ if __name__ == '__main__':
     with open('sites/index.json', 'r') as file_handle:
         links = json.load(file_handle)
 
-    with open('lemmatized/inverted_index.json', 'r') as file_handle:
-        inverted_index = json.load(file_handle)
-
     with open('tf-idf/TF-IDF.json', 'r') as file_handle:
         tf_idf = json.load(file_handle)
 
@@ -49,13 +46,14 @@ if __name__ == '__main__':
     m = Mystem()
     lemmas = [m.lemmatize(word.lower())[0] for word in words]
     tf = calculate_tf(lemmas)
-    i = 0
+
+    tokens_all = [token for token in idf]
+
     for token in tf.keys():
         if token in idf:
-            zeros[i] = tf[token] * idf[token]
+            zeros[tokens_all.index(token)] = tf[token] * idf[token]
         else:
             print(token + " -- doesn't exist in dictionary")
-        i += 1
 
     search_vec_len = np.linalg.norm(zeros)
 
